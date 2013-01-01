@@ -1,20 +1,20 @@
 (require 'cl)
-(require 'el-init-recode)
+(require 'el-init-record)
 (require 'el-init-require)
 
 
 ;; benchmark
 (el-init:define-require el-init:require/benchmark
   (let ((result (benchmark-run (el-init:next))))
-    (unless (el-init:get-recode feature :bench)
-      (el-init:add-recode feature :bench result))))
+    (unless (el-init:get-record feature :bench)
+      (el-init:add-record feature :bench result))))
 
 
-;; recode error
-(el-init:define-require el-init:require/recode-error
+;; record error
+(el-init:define-require el-init:require/record-error
   (condition-case e
       (el-init:next)
-    (error (el-init:add-recode feature
+    (error (el-init:add-record feature
                                :error
                                (error-message-string e)))))
 
@@ -27,7 +27,7 @@
 ;; eval-after-load
 (defalias 'el-init::eval-after-load/original (symbol-function 'eval-after-load))
 
-(el-init:define-require el-init:require/recode-eval-after-load-error
+(el-init:define-require el-init:require/record-eval-after-load-error
   (flet ((eval-after-load (file form)
            (el-init::eval-after-load/original
             file
@@ -35,7 +35,7 @@
               `(condition-case ,e
                    ,form
                  (error
-                  (el-init:add-recode ,feature
+                  (el-init:add-record ,feature
                                       :eval-after-load-error
                                       (error-message-string ,e))))))))
     (el-init:next)))

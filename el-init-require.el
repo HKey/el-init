@@ -1,7 +1,7 @@
 (eval-when-compile
   (require 'cl))
 
-(defvar el-init:load-function-list '(el-init:require/recode-error))
+(defvar el-init:load-function-list '(el-init:require/record-error))
 
 (defalias 'el-init::require/original (symbol-function 'require))
 

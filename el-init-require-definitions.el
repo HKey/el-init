@@ -81,5 +81,44 @@
       (el-init:next))))
 
 
+;; 古い elc ファイルの検出
+
+(defun el-init::ensure-string (object)
+  (format "%s" object))
+
+(defun el-init::file-name-el (filename)
+  (concat (file-name-sans-extension filename) ".el"))
+
+(defun el-init::file-name-elc (filename)
+  (concat (file-name-sans-extension filename) ".elc"))
+
+(defun el-init::old-library-p (library)
+  (el-init::awhen (locate-library (el-init::ensure-string library))
+    (let ((el (el-init::file-name-el it))
+          (elc (el-init::file-name-elc it)))
+      (when (file-newer-than-file-p el elc)
+        elc))))
+
+(defun el-init::byte-compile-library (library)
+  (el-init::awhen (locate-library (el-init::ensure-string library))
+    (ignore-errors
+      (byte-compile-file
+       (el-init::file-name-el it)))))
+
+(el-init:define-require el-init:require/record-old-library
+  (el-init::awhen (el-init::old-library-p (or filename feature))
+    (el-init:add-record feature :old-library it))
+  (el-init:next))
+
+;; 古い elc ファイルのバイトコンパイル
+
+(el-init:define-require el-init:require/compile-old-library
+  (when (el-init::old-library-p (or filename feature))
+    (let ((result (el-init::byte-compile-library (or filename feature))))
+      (el-init:add-record feature
+                          :compile-old-library
+                          (if result :success :failure))))
+  (el-init:next))
+
 
 (provide 'el-init-require-definitions)

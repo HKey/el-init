@@ -1,6 +1,5 @@
 ;;;; Utilities
 
-(require 'bytecomp)
 (require 'cl-lib)
 
 (defmacro el-init::aif (test then &rest else)
@@ -26,13 +25,11 @@
    (file-name-nondirectory
     (file-name-sans-extension file-name))))
 
-(defun el-init::current-file-name ()
-  (or load-file-name
-      byte-compile-current-file
-      (buffer-file-name)))
-
-(defmacro el-init:provide ()
-  `(provide ',(el-init::file-name->symbol (el-init::current-file-name))))
+(defun el-init:provide ()
+  (provide
+   (el-init::file-name->symbol
+    (or load-file-name
+        (buffer-file-name)))))
 
 
 

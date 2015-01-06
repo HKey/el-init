@@ -1,4 +1,4 @@
-(require 'cl)
+(require 'cl-lib)
 (require 'el-init-record)
 (require 'el-init-require)
 
@@ -28,16 +28,16 @@
 (defalias 'el-init::eval-after-load/original (symbol-function 'eval-after-load))
 
 (el-init:define-require el-init:require/record-eval-after-load-error
-  (flet ((eval-after-load (file form)
-           (el-init::eval-after-load/original
-            file
-            (let ((e (gensym)))
-              `(condition-case ,e
-                   ,form
-                 (error
-                  (el-init:add-record ,feature
-                                      :eval-after-load-error
-                                      (error-message-string ,e))))))))
+  (cl-flet ((eval-after-load (file form)
+              (el-init::eval-after-load/original
+               file
+               (let ((e (cl-gensym)))
+                 `(condition-case ,e
+                      ,form
+                    (error
+                     (el-init:add-record ,feature
+                                         :eval-after-load-error
+                                         (error-message-string ,e))))))))
     (el-init:next)))
 
 
@@ -74,9 +74,9 @@
         (cons el-init:freebsd-regexp      #'el-init:freebsdp)))
 
 (el-init:define-require el-init:require/system-case
-  (let ((match (loop for (regexp . predicate) in el-init:system-case-alist
-                     when (string-match-p regexp (symbol-name feature))
-                     return predicate)))
+  (let ((match (cl-loop for (regexp . predicate) in el-init:system-case-alist
+                        when (string-match-p regexp (symbol-name feature))
+                        return predicate)))
     (when (or (not match) (funcall match))
       (el-init:next))))
 

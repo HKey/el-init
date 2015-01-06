@@ -1,5 +1,4 @@
-(eval-when-compile
-  (require 'cl))
+(require 'cl-lib)
 
 (defvar el-init:load-function-list '(el-init:require/record-error))
 
@@ -19,7 +18,7 @@
 
 (defvar el-init::next-fn nil)
 
-(defun* el-init:next
+(cl-defun el-init:next
     (&optional (feature feature) (filename filename) (noerror noerror))
   (declare (special feature filename noerror))
   (funcall el-init::next-fn feature filename noerror))
@@ -29,7 +28,7 @@
   `(defun ,name (el-init::next-fn feature &optional filename noerror)
      ,@body))
 
-(defun* el-init::require/original*
+(cl-defun el-init::require/original*
   (&optional (feature feature) (filename filename) (noerror noerror))
   (declare (special feature filename noerror))
   (el-init::require/original feature filename noerror))

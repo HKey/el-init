@@ -1,5 +1,3 @@
-(eval-when-compile
-  (require 'cl))
 (require 'el-init-util)
 
 (defvar el-init:record nil
@@ -17,7 +15,7 @@
             (plist-put (cdr it) property value))
     (push (cons symbol (list property value)) el-init:record)))
 
-(defsetf el-init:get-record (symbol &optional property) (value)
+(gv-define-setter el-init:get-record (value symbol &optional property)
   (if property
       `(el-init:add-record ,symbol ,property ,value)
     `(el-init::aif (assoc ,symbol el-init:record)

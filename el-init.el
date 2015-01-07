@@ -66,24 +66,17 @@
 (defvar el-init:record nil
   "alist (feature . plist (prop val))")
 
-(defun el-init:get-record (symbol &optional property)
-  (el-init::awhen (cdr (assoc symbol el-init:record))
-    (if property
-        (plist-get it property)
-      it)))
+(defun el-init:get-record (feature property)
+  (plist-get (cdr (assoc feature el-init:record)) property))
 
-(defun el-init:add-record (symbol property value)
-  (el-init::aif (assoc symbol el-init:record)
-      (setf (cdr (assoc symbol el-init:record))
+(defun el-init:add-record (feature property value)
+  (el-init::aif (assoc feature el-init:record)
+      (setf (cdr (assoc feature el-init:record))
             (plist-put (cdr it) property value))
-    (push (cons symbol (list property value)) el-init:record)))
+    (push (cons feature (list property value)) el-init:record)))
 
-(gv-define-setter el-init:get-record (value symbol &optional property)
-  (if property
-      `(el-init:add-record ,symbol ,property ,value)
-    `(el-init::aif (assoc ,symbol el-init:record)
-         (setf (cdr (assoc ,symbol el-init:record)) ,value)
-       (push (cons ,symbol ,value) el-init:record))))
+(gv-define-setter el-init:get-record (value feature property)
+  `(el-init:add-record ,feature ,property ,value))
 
 
 

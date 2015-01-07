@@ -1,4 +1,4 @@
-;;; el-init.el --- A loader inspired by init-loader -*- lexical-binding: t; -*-
+;;; el-init.el --- A loader inspired by init-loader
 
 ;; Copyright (C) 2015  Hiroki YAMAKAWA
 

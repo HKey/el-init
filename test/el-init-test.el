@@ -9,6 +9,8 @@
   (let ((el-init:record nil))
     (el-init:add-record 'el-init-test 'foo "foo")
 
+    (should (equal (el-init:get-feature-record 'el-init-test)
+                   '(foo "foo")))
     (should (string= (el-init:get-record 'el-init-test 'foo) "foo"))
     (should (eq (el-init:get-record 'el-init-test 'bar) nil))))
 

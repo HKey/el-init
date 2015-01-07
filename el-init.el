@@ -66,8 +66,11 @@
 (defvar el-init:record nil
   "alist (feature . plist (prop val))")
 
+(defun el-init:get-feature-record (feature)
+  (cdr (assoc feature el-init:record)))
+
 (defun el-init:get-record (feature property)
-  (plist-get (cdr (assoc feature el-init:record)) property))
+  (plist-get (el-init:get-feature-record feature) property))
 
 (defun el-init:add-record (feature property value)
   (el-init::aif (assoc feature el-init:record)

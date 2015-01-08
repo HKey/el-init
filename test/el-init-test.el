@@ -29,7 +29,9 @@
       (should-not (featurep 'init-test-b))
       (should-not (featurep 'init-test-c))
 
-      (el-init:load target-directory :directory-list '("."))
+      (el-init:load target-directory
+                    :directory-list '(".")
+                    :function-list  nil)
 
       (should     (featurep 'init-test-a))
       (should-not (featurep 'init-test-b))
@@ -41,7 +43,9 @@
       (should-not (featurep 'init-test-b))
       (should-not (featurep 'init-test-c))
 
-      (el-init:load target-directory :directory-list '("." "subdir1"))
+      (el-init:load target-directory
+                    :directory-list '("." "subdir1")
+                    :function-list  nil)
 
       (should     (featurep 'init-test-a))
       (should     (featurep 'init-test-b))
@@ -53,7 +57,9 @@
       (should-not (featurep 'init-test-b))
       (should-not (featurep 'init-test-c))
 
-      (el-init:load target-directory :directory-list '(("." t)))
+      (el-init:load target-directory
+                    :directory-list '(("." t))
+                    :function-list  nil)
 
       (should (featurep 'init-test-a))
       (should (featurep 'init-test-b))

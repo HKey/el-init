@@ -92,65 +92,47 @@
 
 (defvar el-init:load-function-list '(el-init:require/record-error))
 
-(defalias 'el-init::require/original (symbol-function 'require))
+(defvar el-init::require-wrappers nil)
 
-(defun el-init::combine-require (function-list)
-  (if function-list
-      `(lambda (feature &optional filename noerror)
-         (,(car function-list)
-          #',(el-init::combine-require (cdr function-list))
-          feature
-          filename
-          noerror))
-    #'el-init::require/original*))
-
-
-(defvar el-init::next-fn nil)
-
-(cl-defun el-init:next
-    (&optional (feature feature) (filename filename) (noerror noerror))
-  (declare (special feature filename noerror))
-  (funcall el-init::next-fn feature filename noerror))
+(defun el-init:next (feature &optional filename noerror)
+  (let ((fn (car el-init::require-wrappers))
+        (el-init::require-wrappers (cdr el-init::require-wrappers)))
+    (funcall fn feature filename noerror)))
 
 (defmacro el-init:define-require (name &rest body)
   (declare (indent 1))
   `(defun ,name (el-init::next-fn feature &optional filename noerror)
      ,@body))
 
-(cl-defun el-init::require/original*
-  (&optional (feature feature) (filename filename) (noerror noerror))
-  (declare (special feature filename noerror))
-  (el-init::require/original feature filename noerror))
-
 
 
 ;;;; Require Wrapper Definitions
 
 ;; benchmark
-(el-init:define-require el-init:require/benchmark
-  (let ((result (benchmark-run (el-init:next))))
+(defun el-init:require/benchmark (feature &optional filename noerror)
+  (let ((result (benchmark-run (el-init:next feature filename noerror))))
     (unless (el-init:get-record feature :bench)
       (el-init:add-record feature :bench result))))
 
 
 ;; record error
-(el-init:define-require el-init:require/record-error
+(defun el-init:require/record-error (feature &optional filename noerror)
   (condition-case e
-      (el-init:next)
+      (el-init:next feature filename noerror)
     (error (el-init:add-record feature
                                :error
                                (error-message-string e)))))
 
 
 ;; ignore error
-(el-init:define-require el-init:require/ignore-errors
-  (ignore-errors (el-init:next)))
+(defun el-init:require/ignore-errors (feature &optional filename noerror)
+  (ignore-errors (el-init:next feature filename noerror)))
 
 
 ;; eval-after-load
 (defalias 'el-init::eval-after-load/original (symbol-function 'eval-after-load))
 
-(el-init:define-require el-init:require/record-eval-after-load-error
+(defun el-init:require/record-eval-after-load-error (feature &optional filename noerror)
   (cl-flet ((eval-after-load (file form)
               (el-init::eval-after-load/original
                file
@@ -161,7 +143,7 @@
                      (el-init:add-record ,feature
                                          :eval-after-load-error
                                          (error-message-string ,e))))))))
-    (el-init:next)))
+    (el-init:next feature filename noerror)))
 
 
 ;; システムによる分岐 init-loader から
@@ -196,12 +178,12 @@
         (cons el-init:linux-regexp        #'el-init:linuxp)
         (cons el-init:freebsd-regexp      #'el-init:freebsdp)))
 
-(el-init:define-require el-init:require/system-case
+(defun el-init:require/system-case (feature &optional filename noerror)
   (let ((match (cl-loop for (regexp . predicate) in el-init:system-case-alist
                         when (string-match-p regexp (symbol-name feature))
                         return predicate)))
     (when (or (not match) (funcall match))
-      (el-init:next))))
+      (el-init:next feature filename noerror))))
 
 
 ;; 古い elc ファイルの検出
@@ -228,20 +210,20 @@
       (byte-compile-file
        (el-init::file-name-el it)))))
 
-(el-init:define-require el-init:require/record-old-library
+(defun el-init:require/record-old-library (feature &optional filename noerror)
   (el-init::awhen (el-init::old-library-p (or filename feature))
     (el-init:add-record feature :old-library it))
-  (el-init:next))
+  (el-init:next feature filename noerror))
 
 ;; 古い elc ファイルのバイトコンパイル
 
-(el-init:define-require el-init:require/compile-old-library
+(defun el-init:require/compile-old-library (feature &optional filename noerror)
   (when (el-init::old-library-p (or filename feature))
     (let ((result (el-init::byte-compile-library (or filename feature))))
       (el-init:add-record feature
                           :compile-old-library
                           (if result :success :failure))))
-  (el-init:next))
+  (el-init:next feature filename noerror))
 
 
 
@@ -302,14 +284,18 @@
     (add-to-list 'load-path dir))
   ;; 各ファイルのロード
   (unwind-protect
-      (let ((load-fn (el-init::combine-require function-list)))
+      (let ((el-init::require-wrappers
+             (append function-list
+                     (list (if override (symbol-function 'require) 'require)))))
         (cl-dolist (files (el-init::load-files directory directory-list))
           (cl-dolist (feature (cl-remove-duplicates
                                (mapcar #'el-init::file-name->symbol files)))
             (if override
-                (cl-letf (((symbol-function 'require) load-fn))
-                  (require feature))
-              (funcall load-fn feature)))))
+                (cl-letf (((symbol-function 'require)
+                           (lambda (feature &optional filename noerror)
+                             (el-init:next feature filename noerror))))
+                  (el-init:next feature))
+              (el-init:next feature)))))
     ;; フックの実行
     (run-hooks 'el-init:after-load-hook)))
 

@@ -94,15 +94,14 @@
 
 (defalias 'el-init::require/original (symbol-function 'require))
 
-(defun el-init::combine-require (function-list &optional compile)
+(defun el-init::combine-require (function-list)
   (if function-list
-      (funcall (if compile #'byte-compile #'identity)
-               `(lambda (feature &optional filename noerror)
-                  (,(car function-list)
-                   #',(el-init::combine-require (cdr function-list))
-                   feature
-                   filename
-                   noerror)))
+      `(lambda (feature &optional filename noerror)
+         (,(car function-list)
+          #',(el-init::combine-require (cdr function-list))
+          feature
+          filename
+          noerror))
     #'el-init::require/original*))
 
 
@@ -252,7 +251,6 @@
 
 (defvar el-init:load-file-regexp "\\.elc?$" "読み込み対象ファイルの正規表現")
 (defvar el-init:load-directory-list '("base" "init" "lang") "探索対象のディレクトリ")
-(defvar el-init:load-function-compile nil)
 (defvar el-init:before-load-hook nil)
 (defvar el-init:after-load-hook nil)
 
@@ -296,7 +294,6 @@
                         &key
                         (directory-list el-init:load-directory-list)
                         (function-list el-init:load-function-list)
-                        (compile el-init:load-function-compile)
                         override)              ;require の乗っ取り
   ;; フックの実行
   (run-hooks 'el-init:before-load-hook)
@@ -305,7 +302,7 @@
     (add-to-list 'load-path dir))
   ;; 各ファイルのロード
   (unwind-protect
-      (let ((load-fn (el-init::combine-require function-list compile)))
+      (let ((load-fn (el-init::combine-require function-list)))
         (cl-dolist (files (el-init::load-files directory directory-list))
           (cl-dolist (feature (cl-remove-duplicates
                                (mapcar #'el-init::file-name->symbol files)))

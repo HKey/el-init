@@ -78,8 +78,13 @@
             (plist-put (cdr it) property value))
     (push (cons feature (list property value)) el-init:record)))
 
-(gv-define-setter el-init:get-record (value feature property)
-  `(el-init:add-record ,feature ,property ,value))
+(with-no-warnings
+  ;; Since Emacs 24.3, `defsetf' has been obsolete.
+  (if (fboundp 'gv-define-setter)
+      (gv-define-setter el-init:get-record (value feature property)
+        `(el-init:add-record ,feature ,property ,value))
+    (defsetf el-init:get-record (feature property) (value)
+      `(el-init:add-record ,feature ,property ,value))))
 
 
 

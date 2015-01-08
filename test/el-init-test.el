@@ -13,7 +13,11 @@
     (should (equal (el-init:get-feature-record 'el-init-test)
                    '(foo "foo")))
     (should (string= (el-init:get-record 'el-init-test 'foo) "foo"))
-    (should (eq (el-init:get-record 'el-init-test 'bar) nil))))
+    (should (eq (el-init:get-record 'el-init-test 'bar) nil))
+
+    (setf (el-init:get-record 'el-init-test 'bar) "bar")
+
+    (should (string= (el-init:get-record 'el-init-test 'bar) "bar"))))
 
 ;;;; Loader
 

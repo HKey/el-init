@@ -101,8 +101,12 @@
 
 (defmacro el-init:define-require (name &rest body)
   (declare (indent 1))
-  `(defun ,name (el-init::next-fn feature &optional filename noerror)
-     ,@body))
+  (warn "`el-init:define-require' is obsolete.")
+  (let ((next (cl-gensym)))
+    `(defun ,name (feature &optional filename noerror)
+       (cl-labels ((,next () (el-init:next feature filename noerror)))
+         (cl-macrolet ((el-init:next () '(,next)))
+           ,@body)))))
 
 
 

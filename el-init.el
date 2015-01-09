@@ -132,20 +132,22 @@
 
 
 ;; eval-after-load
-(defalias 'el-init::eval-after-load/original (symbol-function 'eval-after-load))
-
-(defun el-init:require/record-eval-after-load-error (feature &optional filename noerror)
-  (cl-flet ((eval-after-load (file form)
-              (el-init::eval-after-load/original
-               file
-               (let ((e (cl-gensym)))
-                 `(condition-case ,e
-                      ,form
-                    (error
-                     (el-init:add-record ,feature
-                                         'el-init:require/record-eval-after-load-error
-                                         ,e)))))))
-    (el-init:next feature filename noerror)))
+(defun el-init:require/record-eval-after-load-error
+    (feature &optional filename noerror)
+  (let* ((original (symbol-function 'eval-after-load))
+         (e (cl-gensym))
+         (fn (lambda (file form)
+               (funcall original
+                        file
+                        `(condition-case ,e
+                             ,(if (functionp form) `(funcall ,form) form)
+                           (error
+                            (push (list :file ,file :error ,e)
+                                  (el-init:get-record
+                                   ',feature
+                                   'el-init:require/record-eval-after-load-error))))))))
+    (cl-letf (((symbol-function 'eval-after-load) fn))
+      (el-init:next feature filename noerror))))
 
 
 ;; システムによる分岐 init-loader から

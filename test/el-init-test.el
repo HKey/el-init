@@ -94,4 +94,14 @@
       (should (= (length record) 3))
       (should (cl-every #'numberp record)))))
 
+(ert-deftest el-init-test:require/record-error ()
+  (el-init-test:sandbox
+    (el-init:load (el-init-test:get-path "test-inits/wrappers/error")
+                  :directory-list '(".")
+                  :function-list (list #'el-init:require/record-error))
+
+    (should (equal (el-init:get-record 'init-test-error
+                                       'el-init:require/record-error)
+                   '(error "Error")))))
+
 ;;; el-init-test.el ends here

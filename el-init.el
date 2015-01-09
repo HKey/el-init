@@ -173,10 +173,10 @@
 (defun el-init:freebsdp () (string-match-p "freebsd" system-configuration))
 
 (defvar el-init:system-case-alist
-  (list (cons el-init:meadow-regexp       #'el-init:meadow-p)
+  (list (cons el-init:meadow-regexp       #'el-init:meadowp)
         (cons el-init:carbon-emacs-regexp #'el-init:carbon-emacs-p)
         (cons el-init:cocoa-emacs-regexp  #'el-init:cocoa-emacs-p)
-        (cons el-init:nw-regexp           #'el-init:nw-p)
+        (cons el-init:nw-regexp           #'el-init:nwp)
         (cons el-init:mac-regexp          #'el-init:macp)
         (cons el-init:windows-regexp      #'el-init:windowsp)
         (cons el-init:linux-regexp        #'el-init:linuxp)

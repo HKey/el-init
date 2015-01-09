@@ -115,4 +115,19 @@
 
       (should (null caught)))))
 
+(ert-deftest el-init-test:require/record-eval-after-load-error ()
+  (el-init-test:sandbox
+    (el-init:load (el-init-test:get-path "test-inits/wrappers/eval-after-load")
+                  :directory-list '("error")
+                  :function-list (list #'el-init:require/record-eval-after-load-error))
+    (add-to-list 'load-path
+                 (el-init-test:get-path "test-inits/wrappers/eval-after-load"))
+    (require 'init-test-library)
+
+    (let ((record (el-init:get-record 'init-test-error
+                                      'el-init:require/record-eval-after-load-error)))
+      (should (= (length record) 1))
+      (should (equal (plist-get (cl-first record) :error)
+                     '(error "Error"))))))
+
 ;;; el-init-test.el ends here

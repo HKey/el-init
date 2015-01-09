@@ -116,7 +116,7 @@
 (defun el-init:require/benchmark (feature &optional filename noerror)
   (let ((result (benchmark-run (el-init:next feature filename noerror))))
     (unless (el-init:get-record feature :bench)
-      (el-init:add-record feature :bench result))))
+      (el-init:add-record feature 'el-init:require/benchmark result))))
 
 
 ;; record error
@@ -124,7 +124,7 @@
   (condition-case e
       (el-init:next feature filename noerror)
     (error (el-init:add-record feature
-                               :error
+                               'el-init:require/record-error
                                (error-message-string e)))))
 
 
@@ -145,7 +145,7 @@
                       ,form
                     (error
                      (el-init:add-record ,feature
-                                         :eval-after-load-error
+                                         'el-init:require/record-eval-after-load-error
                                          (error-message-string ,e))))))))
     (el-init:next feature filename noerror)))
 

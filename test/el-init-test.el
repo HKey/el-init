@@ -81,4 +81,17 @@
         (should (memq 'init-test-a        feature-list))
         (should (memq 'init-test-override feature-list))))))
 
+;;;; Require Wrappers
+
+(ert-deftest el-init-test:require/benchmark ()
+  (el-init-test:sandbox
+    (el-init:load (el-init-test:get-path "test-inits/wrappers/benchmark")
+                  :directory-list '(".")
+                  :function-list (list #'el-init:require/benchmark))
+
+    (let ((record (el-init:get-record 'init-test-benchmark
+                                      'el-init:require/benchmark)))
+      (should (= (length record) 3))
+      (should (cl-every #'numberp record)))))
+
 ;;; el-init-test.el ends here

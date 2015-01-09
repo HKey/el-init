@@ -20,4 +20,7 @@
                         :initial-value features
                         :from-end t)))))
 
+(defun el-init-test:get-path (path)
+  (expand-file-name path el-init-test:test-directory))
+
 (provide 'el-init-test-helper)

@@ -22,8 +22,7 @@
 ;;;; Loader
 
 (ert-deftest el-init-test:loader ()
-  (let ((target-directory (expand-file-name "test-inits/loader"
-                                            el-init-test:test-directory)))
+  (let ((target-directory (el-init-test:get-path "test-inits/loader")))
     (el-init-test:sandbox
       (should-not (featurep 'init-test-a))
       (should-not (featurep 'init-test-b))

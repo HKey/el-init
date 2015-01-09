@@ -104,4 +104,15 @@
                                        'el-init:require/record-error)
                    '(error "Error")))))
 
+(ert-deftest el-init-test:require/ignore-errors ()
+  (el-init-test:sandbox
+    (let ((caught nil))
+      (condition-case e
+          (el-init:load (el-init-test:get-path "test-inits/wrappers/error")
+                        :directory-list '(".")
+                        :function-list (list #'el-init:require/ignore-errors))
+        (error (setq caught e)))
+
+      (should (null caught)))))
+
 ;;; el-init-test.el ends here

@@ -288,16 +288,18 @@
     (add-to-list 'load-path dir))
   ;; 各ファイルのロード
   (unwind-protect
-      (let ((el-init::require-wrappers
-             (append function-list
-                     (list (if override (symbol-function 'require) 'require)))))
+      (let* ((el-init::require-wrappers
+              (append function-list
+                      (list (if override (symbol-function 'require) 'require))))
+             (override-wrappers el-init::require-wrappers))
         (cl-dolist (files (el-init::load-files directory directory-list))
           (cl-dolist (feature (cl-remove-duplicates
                                (mapcar #'el-init::file-name->symbol files)))
             (if override
                 (cl-letf (((symbol-function 'require)
                            (lambda (feature &optional filename noerror)
-                             (el-init:next feature filename noerror))))
+                             (let ((el-init::require-wrappers override-wrappers))
+                               (el-init:next feature filename noerror)))))
                   (el-init:next feature))
               (el-init:next feature)))))
     ;; フックの実行

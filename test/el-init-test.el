@@ -63,6 +63,23 @@
 
       (should (featurep 'init-test-a))
       (should (featurep 'init-test-b))
-      (should (featurep 'init-test-c)))))
+      (should (featurep 'init-test-c)))
+
+    ;; override
+    (el-init-test:sandbox
+      (let ((feature-list nil))
+        (add-to-list 'load-path target-directory)
+
+        (el-init:load target-directory
+                      :directory-list '("override")
+                      :function-list
+                      (list
+                       (lambda (feature &optional filename noerror)
+                         (push feature feature-list)
+                         (el-init:next feature filename noerror)))
+                      :override t)
+
+        (should (memq 'init-test-a        feature-list))
+        (should (memq 'init-test-override feature-list))))))
 
 ;;; el-init-test.el ends here

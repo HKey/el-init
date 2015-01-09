@@ -123,9 +123,7 @@
 (defun el-init:require/record-error (feature &optional filename noerror)
   (condition-case e
       (el-init:next feature filename noerror)
-    (error (el-init:add-record feature
-                               'el-init:require/record-error
-                               (error-message-string e)))))
+    (error (el-init:add-record feature 'el-init:require/record-error e))))
 
 
 ;; ignore error

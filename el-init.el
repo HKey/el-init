@@ -144,7 +144,7 @@
                     (error
                      (el-init:add-record ,feature
                                          'el-init:require/record-eval-after-load-error
-                                         (error-message-string ,e))))))))
+                                         ,e)))))))
     (el-init:next feature filename noerror)))
 
 

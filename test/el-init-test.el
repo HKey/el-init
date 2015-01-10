@@ -154,4 +154,21 @@
       (funcall fn)
       (should (funcall rec)))))
 
+(ert-deftest el-init-test:require/compile-old-library ()
+  (let* ((dir (el-init-test:get-path "test-inits/wrappers/old-library"))
+         (el  (concat dir "/init-test.el"))
+         (elc (concat el "c")))
+    (byte-compile-file el)
+    (sleep-for 1)
+    (shell-command (format "touch %s" (shell-quote-argument el)))
+    (sleep-for 1)
+
+    (el-init-test:sandbox
+      (el-init:load dir
+                    :directory-list '(".")
+                    :function-list (list #'el-init:require/compile-old-library))
+      (should (el-init:get-record 'init-test
+                                  'el-init:require/compile-old-library))
+      (should (file-newer-than-file-p elc el)))))
+
 ;;; el-init-test.el ends here

@@ -216,7 +216,7 @@
 
 (defun el-init:require/record-old-library (feature &optional filename noerror)
   (el-init:add-record feature
-                      :old-library
+                      'el-init:require/record-old-library
                       (and (el-init::old-library-p (or filename feature)) t))
   (el-init:next feature filename noerror))
 
@@ -226,7 +226,7 @@
   (when (el-init::old-library-p (or filename feature))
     (let ((result (el-init::byte-compile-library (or filename feature))))
       (el-init:add-record feature
-                          :compile-old-library
+                          'el-init:require/compile-old-library
                           result)))
   (el-init:next feature filename noerror))
 

@@ -227,7 +227,7 @@
     (let ((result (el-init::byte-compile-library (or filename feature))))
       (el-init:add-record feature
                           :compile-old-library
-                          (if result :success :failure))))
+                          result)))
   (el-init:next feature filename noerror))
 
 

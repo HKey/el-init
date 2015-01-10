@@ -147,6 +147,7 @@
       (funcall fn)
       (should-not (funcall rec)))
 
+    (sleep-for 1)                       ; certainly update timestamp
     (shell-command (format "touch %s" (shell-quote-argument el)))
 
     (el-init-test:sandbox

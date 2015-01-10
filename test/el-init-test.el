@@ -130,4 +130,27 @@
       (should (equal (plist-get (cl-first record) :error)
                      '(error "Error"))))))
 
+(ert-deftest el-init-test:require/record-old-library ()
+  (let* ((dir (el-init-test:get-path "test-inits/wrappers/old-library"))
+         (el  (concat dir "/init-test.el"))
+         (fn  (lambda ()
+                (el-init:load
+                 dir
+                 :directory-list '(".")
+                 :function-list (list #'el-init:require/record-old-library))))
+         (rec (lambda ()
+                (el-init:get-record 'init-test
+                                    'el-init:require/record-old-library))))
+    (byte-compile-file el)
+
+    (el-init-test:sandbox
+      (funcall fn)
+      (should-not (funcall rec)))
+
+    (shell-command (format "touch %s" (shell-quote-argument el)))
+
+    (el-init-test:sandbox
+      (funcall fn)
+      (should (funcall rec)))))
+
 ;;; el-init-test.el ends here

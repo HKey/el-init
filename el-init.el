@@ -215,8 +215,9 @@
        (el-init::file-name-el it)))))
 
 (defun el-init:require/record-old-library (feature &optional filename noerror)
-  (el-init::awhen (el-init::old-library-p (or filename feature))
-    (el-init:add-record feature :old-library it))
+  (el-init:add-record feature
+                      :old-library
+                      (and (el-init::old-library-p (or filename feature)) t))
   (el-init:next feature filename noerror))
 
 ;; 古い elc ファイルのバイトコンパイル

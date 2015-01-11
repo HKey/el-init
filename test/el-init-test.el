@@ -135,6 +135,19 @@
       (should (equal (plist-get (cl-first record) :error)
                      '(error "Error"))))))
 
+(ert-deftest el-init-test:require/system-case ()
+  (el-init-test:sandbox
+    (el-init:load (el-init-test:get-path "test-inits/wrappers/system-case")
+                  :directory-list '(".")
+                  :function-list (list #'el-init:require/system-case))
+
+    (should (= (length (cl-remove-if-not #'featurep
+                                         '(init-mac-test
+                                           init-windows-test
+                                           init-linux-test
+                                           init-freebsd-test)))
+               1))))
+
 (ert-deftest el-init-test:require/record-old-library ()
   (let* ((dir (el-init-test:get-path "test-inits/wrappers/old-library"))
          (el  (concat dir "/init-test.el"))

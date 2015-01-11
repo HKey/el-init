@@ -9,6 +9,15 @@
 (require 'el-init)
 (require 'el-init-test-helper)
 
+;;;; Utilities
+
+(ert-deftest el-init-test:provide ()
+  (el-init-test:sandbox
+    (require 'init-test-provide
+             (el-init-test:get-path "test-inits/utilities/init-test-provide"))
+
+    (should (featurep 'init-test-provide))))
+
 ;;;; Record
 
 (ert-deftest el-init-test:record ()

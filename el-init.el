@@ -4,7 +4,7 @@
 
 ;; Author: Hiroki YAMAKAWA <s06139@gmail.com>
 ;; Version: 0.1.0
-;; Package-Requires: ((cl-lib "0.5"))
+;; Package-Requires: ((cl-lib "0.5") (anaphora "1.0.0"))
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,21 +27,9 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'anaphora)
 
 ;;;; Utilities
-
-(defmacro el-init::aif (test then &rest else)
-  (declare (indent 2))
-  `(let ((it ,test))
-     (if it
-         ,then
-       ,@else)))
-
-(defmacro el-init::awhen (test &rest body)
-  (declare (indent 1))
-  `(let ((it ,test))
-     (when it
-       ,@body)))
 
 (defun el-init::listify (object)
   (if (listp object)
@@ -73,7 +61,7 @@
   (plist-get (el-init:get-feature-record feature) property))
 
 (defun el-init:add-record (feature property value)
-  (el-init::aif (assoc feature el-init:record)
+  (aif (assoc feature el-init:record)
       (setf (cdr (assoc feature el-init:record))
             (plist-put (cdr it) property value))
     (push (cons feature (list property value)) el-init:record)))
@@ -202,14 +190,14 @@
   (concat (file-name-sans-extension filename) ".elc"))
 
 (defun el-init::old-library-p (library)
-  (el-init::awhen (locate-library (el-init::ensure-string library))
+  (awhen (locate-library (el-init::ensure-string library))
     (let ((el (el-init::file-name-el it))
           (elc (el-init::file-name-elc it)))
       (when (file-newer-than-file-p el elc)
         elc))))
 
 (defun el-init::byte-compile-library (library)
-  (el-init::awhen (locate-library (el-init::ensure-string library))
+  (awhen (locate-library (el-init::ensure-string library))
     (ignore-errors
       (byte-compile-file
        (el-init::file-name-el it)))))

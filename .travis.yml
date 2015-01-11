@@ -19,7 +19,7 @@ before_install:
   # setup cask
   - cask
   - cask clean-elc
-  - cask build
+  # - cask build
 script:
   - emacs --version
   - cask exec ert-runner

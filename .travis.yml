@@ -20,7 +20,7 @@ before_install:
   - cask
   - cask clean-elc
   # do not compile when using undercover.el
-  - test $COVERALLS = "no" && cask build
+  - test $COVERALLS = "no" && cask build; true
 script:
   - emacs --version
   - cask exec ert-runner

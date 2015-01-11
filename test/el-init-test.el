@@ -1,5 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
+(require 'undercover)
+
+(undercover "el-init.el")
+
 (require 'ert)
 (require 'el-init)
 (require 'el-init-test-helper)

@@ -230,14 +230,9 @@
 (defvar el-init:after-load-hook nil)
 
 
-(defun el-init::path-concat-rec (&rest path)
-  (if (null (cdr path))
-      (car path)
-    (concat (file-name-as-directory (car path))
-            (apply #'el-init::path-concat-rec (cdr path)))))
-
-(defun el-init::path-concat (&rest path)
-  (expand-file-name (apply #'el-init::path-concat-rec path)))
+(defun el-init::path-concat (&rest paths)
+  (cl-reduce (lambda (x y) (concat (file-name-as-directory x) y))
+             paths))
 
 (defun el-init::directory-directories (directory)
   (cl-remove-if

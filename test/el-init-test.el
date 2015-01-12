@@ -74,7 +74,7 @@
       (should-not (featurep 'init-test-c))
 
       (el-init:load target-directory
-                    :directory-list '(("." t))
+                    :directory-list '("." ("subdir1" t))
                     :function-list  nil)
 
       (should (featurep 'init-test-a))

@@ -234,7 +234,7 @@
   (cl-reduce (lambda (x y) (concat (file-name-as-directory x) y))
              paths))
 
-(defun el-init::directory-directories (directory)
+(defun el-init::list-subdirectories (directory)
   (cl-remove-if
    (lambda (x)
      (string-match-p (rx bos (or ".." ".") eos)
@@ -242,22 +242,21 @@
    (cl-remove-if-not #'file-directory-p
                      (directory-files directory t))))
 
-(defun el-init::directory-directories-all (directory)
+(defun el-init::list-all-directories (directory)
   (cons directory
-        (cl-mapcan #'el-init::directory-directories-all
-                   (el-init::directory-directories directory))))
+        (cl-mapcan #'el-init::list-all-directories
+                   (el-init::list-subdirectories directory))))
 
-
-(cl-defun el-init::load-directories (directory &optional (subdirectories el-init:load-directory-list))
+(defun el-init::expand-directory-list (directory subdirectories)
   (cl-loop for dir in (mapcar #'el-init::listify subdirectories)
            when (file-directory-p (el-init::path-concat directory (cl-first dir)))
            append (if (cl-second dir)
-                      (el-init::directory-directories-all
+                      (el-init::list-all-directories
                        (el-init::path-concat directory (cl-first dir)))
                     (list (el-init::path-concat directory (cl-first dir))))))
 
-(cl-defun el-init::load-files (directory &optional (subdirectories el-init:load-directory-list))
-  (cl-loop for d in (el-init::load-directories directory subdirectories)
+(defun el-init::target-files (directory subdirectories)
+  (cl-loop for d in (el-init::expand-directory-list directory subdirectories)
            collect (directory-files d nil el-init:load-file-regexp)))
 
 (cl-defun el-init:load (directory
@@ -268,7 +267,7 @@
   ;; フックの実行
   (run-hooks 'el-init:before-load-hook)
   ;; load-pathへの追加
-  (cl-dolist (dir (el-init::load-directories directory directory-list))
+  (cl-dolist (dir (el-init::expand-directory-list directory directory-list))
     (add-to-list 'load-path dir))
   ;; 各ファイルのロード
   (unwind-protect
@@ -276,7 +275,7 @@
               (append function-list
                       (list (if override (symbol-function 'require) 'require))))
              (override-wrappers el-init::require-wrappers))
-        (cl-dolist (files (el-init::load-files directory directory-list))
+        (cl-dolist (files (el-init::target-files directory directory-list))
           (cl-dolist (feature (cl-remove-duplicates
                                (mapcar #'el-init::file-name->symbol files)))
             (if override

@@ -9,6 +9,9 @@
 (require 'el-init)
 (require 'el-init-test-helper)
 
+; not to unload `warnings' by `el-init-test:sandbox'
+(require 'warnings)
+
 ;;;; Utilities
 
 (ert-deftest el-init-test:provide ()

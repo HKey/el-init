@@ -128,7 +128,8 @@
 (defun el-init:require/record-error (feature &optional filename noerror)
   (condition-case e
       (el-init:next feature filename noerror)
-    (error (el-init:add-record feature 'el-init:require/record-error e))))
+    (error (el-init:add-record feature 'el-init:require/record-error e)
+           (el-init:alert (error-message-string e)))))
 
 
 ;; ignore error
@@ -150,7 +151,8 @@
                             (push (list :file ,file :error ,e)
                                   (el-init:get-record
                                    ',feature
-                                   'el-init:require/record-eval-after-load-error))))))))
+                                   'el-init:require/record-eval-after-load-error))
+                            (el-init:alert (error-message-string ,e))))))))
     (cl-letf (((symbol-function 'eval-after-load) fn))
       (el-init:next feature filename noerror))))
 
@@ -287,7 +289,7 @@
   (cl-dolist (dir (el-init::expand-directory-list directory directory-list))
     (add-to-list 'load-path dir))
   ;; 各ファイルのロード
-  (unwind-protect
+  (condition-case e
       (let* ((el-init::require-wrappers
               (append function-list
                       (list (if override (symbol-function 'require) 'require))))
@@ -302,8 +304,9 @@
                                (el-init:next feature filename noerror)))))
                   (el-init:next feature))
               (el-init:next feature)))))
-    ;; フックの実行
-    (run-hooks 'el-init:after-load-hook)))
+    (error (el-init:alert (error-message-string e))))
+  ;; フックの実行
+  (run-hooks 'el-init:after-load-hook))
 
 
 

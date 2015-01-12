@@ -41,6 +41,7 @@
    (file-name-nondirectory
     (file-name-sans-extension file-name))))
 
+;;;###autoload
 (defun el-init:provide ()
   (provide
    (el-init::file-name->symbol
@@ -278,6 +279,7 @@
   (cl-loop for d in (el-init::expand-directory-list directory subdirectories)
            collect (directory-files d nil el-init:load-file-regexp)))
 
+;;;###autoload
 (cl-defun el-init:load (directory
                         &key
                         (directory-list el-init:load-directory-list)

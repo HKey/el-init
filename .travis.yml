@@ -18,12 +18,9 @@ before_install:
 
   # setup cask
   - cask
-  - cask clean-elc
-  # do not compile when using undercover.el
-  - test $COVERALLS = "no" && cask build; true
 script:
   - emacs --version
-  - cask exec ert-runner
+  - if [ $COVERALLS = "yes" ]; then make coverage; else make full-test; fi
 env:
   - EVM_EMACS=emacs-24.1-bin COVERALLS=no
   - EVM_EMACS=emacs-24.2-bin COVERALLS=no

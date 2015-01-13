@@ -252,8 +252,9 @@
 
 
 (defun el-init::path-concat (&rest paths)
-  (cl-reduce (lambda (x y) (concat (file-name-as-directory x) y))
-             paths))
+  (expand-file-name
+   (cl-reduce (lambda (x y) (concat (file-name-as-directory x) y))
+              paths)))
 
 (defun el-init::list-subdirectories (directory)
   (cl-remove-if

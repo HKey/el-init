@@ -82,21 +82,32 @@
       (should (featurep 'init-test-c)))
 
     ;; override
-    (el-init-test:sandbox
-      (let ((feature-list nil))
-        (add-to-list 'load-path target-directory)
+    (let* ((feature-list nil)
+           (fn (lambda (only-init-files)
+                 (add-to-list 'load-path target-directory)
+                 (el-init:load target-directory
+                               :directory-list '("override")
+                               :function-list
+                               (list
+                                (lambda (feature &optional filename noerror)
+                                  (push feature feature-list)
+                                  (el-init:next feature filename noerror)))
+                               :override t
+                               :override-only-init-files only-init-files))))
 
-        (el-init:load target-directory
-                      :directory-list '("override")
-                      :function-list
-                      (list
-                       (lambda (feature &optional filename noerror)
-                         (push feature feature-list)
-                         (el-init:next feature filename noerror)))
-                      :override t)
+      ;; override only for init files
+      (el-init-test:sandbox
+       (funcall fn t)
+       (should-not (memq 'init-test-a        feature-list))
+       (should     (memq 'init-test-override feature-list)))
 
-        (should (memq 'init-test-a        feature-list))
-        (should (memq 'init-test-override feature-list))))))
+      (setq feature-list nil)
+
+      ;; override for all libraries
+      (el-init-test:sandbox
+       (funcall fn nil)
+       (should (memq 'init-test-a        feature-list))
+       (should (memq 'init-test-override feature-list))))))
 
 ;;;; Require Wrappers
 

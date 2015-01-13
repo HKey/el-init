@@ -246,6 +246,7 @@
 
 (defvar el-init:load-file-regexp "\\.elc?$" "読み込み対象ファイルの正規表現")
 (defvar el-init:load-directory-list '("base" "init" "lang") "探索対象のディレクトリ")
+(defvar el-init:override-only-init-files t)
 (defvar el-init:before-load-hook nil)
 (defvar el-init:after-load-hook nil)
 
@@ -277,13 +278,25 @@
 
 (defun el-init::target-files (directory subdirectories)
   (cl-loop for d in (el-init::expand-directory-list directory subdirectories)
-           collect (directory-files d nil el-init:load-file-regexp)))
+           append (directory-files d nil el-init:load-file-regexp)))
+
+(defun el-init::make-overridden-require (original
+                                         wrappers
+                                         init-features
+                                         only-init-files)
+  (lambda (feature &optional filename noerror)
+    (if (or (not only-init-files)
+            (memq feature init-features))
+        (let ((el-init::require-wrappers wrappers))
+          (el-init:next feature filename noerror))
+      (funcall original feature filename noerror))))
 
 ;;;###autoload
 (cl-defun el-init:load (directory
                         &key
                         (directory-list el-init:load-directory-list)
                         (function-list el-init:load-function-list)
+                        (override-only-init-files el-init:override-only-init-files)
                         override)              ;require の乗っ取り
   ;; フックの実行
   (run-hooks 'el-init:before-load-hook)
@@ -292,20 +305,24 @@
     (add-to-list 'load-path dir))
   ;; 各ファイルのロード
   (condition-case e
-      (let* ((el-init::require-wrappers
-              (append function-list
-                      (list (if override (symbol-function 'require) 'require))))
-             (override-wrappers el-init::require-wrappers))
-        (cl-dolist (files (el-init::target-files directory directory-list))
-          (cl-dolist (feature (cl-remove-duplicates
-                               (mapcar #'el-init::file-name->symbol files)))
-            (if override
-                (cl-letf (((symbol-function 'require)
-                           (lambda (feature &optional filename noerror)
-                             (let ((el-init::require-wrappers override-wrappers))
-                               (el-init:next feature filename noerror)))))
-                  (el-init:next feature))
-              (el-init:next feature)))))
+      (let* ((original
+              (if override (symbol-function 'require) 'require))
+             (el-init::require-wrappers
+              (append function-list (list original)))
+             (init-features
+              (cl-remove-duplicates
+               (mapcar #'el-init::file-name->symbol
+                       (el-init::target-files directory directory-list))))
+             (overridden-require
+              (el-init::make-overridden-require original
+                                                el-init::require-wrappers
+                                                init-features
+                                                override-only-init-files)))
+        (cl-dolist (feature init-features)
+          (if override
+              (cl-letf (((symbol-function 'require) overridden-require))
+                (el-init:next feature))
+            (el-init:next feature))))
     (error (el-init:alert (error-message-string e))))
   ;; フックの実行
   (run-hooks 'el-init:after-load-hook))

@@ -246,7 +246,7 @@
 
 (defvar el-init:load-file-regexp "\\.elc?$" "読み込み対象ファイルの正規表現")
 (defvar el-init:load-directory-list '(".") "探索対象のディレクトリ")
-(defvar el-init:override-only-init-files t)
+(defvar el-init:override-only-init-files-p t)
 (defvar el-init:before-load-hook nil)
 (defvar el-init:after-load-hook nil)
 
@@ -297,7 +297,7 @@
                         &key
                         (directory-list el-init:load-directory-list)
                         (function-list el-init:load-function-list)
-                        (override-only-init-files el-init:override-only-init-files)
+                        (override-only-init-files el-init:override-only-init-files-p)
                         override)              ;require の乗っ取り
   ;; フックの実行
   (run-hooks 'el-init:before-load-hook)

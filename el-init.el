@@ -121,7 +121,7 @@
 ;; benchmark
 (defun el-init:require/benchmark (feature &optional filename noerror)
   (let ((result (benchmark-run (el-init:next feature filename noerror))))
-    (unless (el-init:get-record feature :bench)
+    (unless (el-init:get-record feature 'el-init:require/benchmark)
       (el-init:add-record feature 'el-init:require/benchmark result))))
 
 

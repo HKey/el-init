@@ -12,6 +12,7 @@
   (let ((snapshot (cl-gensym)))
     `(let ((el-init:record nil)
            (load-path load-path)
+           (after-load-alist after-load-alist)
            (,snapshot features))
        ,@body
        (mapc #'unload-feature

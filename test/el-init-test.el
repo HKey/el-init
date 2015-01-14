@@ -1,8 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
-(when (string= (getenv "COVERALLS") "yes")
-  (require 'undercover)
+(require 'undercover)
 
+(when (string= (getenv "COVERALLS") "yes")
   (undercover "el-init.el"))
 
 (require 'ert)

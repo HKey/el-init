@@ -6,14 +6,15 @@ MAKE  ?= make
 
 clean:
 	${CASK} clean-elc
+	-rm ./test/*.elc
 
 compile:
 	${EMACS} --version
-	${CASK} exec ${EMACS} -Q -batch -L . -eval \
+	${CASK} exec ${EMACS} -Q -batch -L . -L ./test -eval \
 	"(progn \
 	   (when (version<= \"24.3\" emacs-version) \
 	     (setq byte-compile-error-on-warn t)) \
-	   (batch-byte-compile))" el-init.el
+	   (batch-byte-compile))" el-init.el ./test/*.el
 
 test:
 	${CASK} exec ert-runner

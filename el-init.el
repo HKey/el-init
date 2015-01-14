@@ -158,7 +158,8 @@
       (el-init:next feature filename noerror))))
 
 
-;; システムによる分岐 init-loader から
+;; switching by the system (from init-loader)
+
 (defvar el-init:meadow-regexp       "^init-meadow-")
 (defvar el-init:carbon-emacs-regexp "^init-carbon-emacs-")
 (defvar el-init:cocoa-emacs-regexp  "^init-cocoa-emacs-")
@@ -169,7 +170,6 @@
 (defun el-init:cocoa-emacs-p  () (eq window-system 'ns))
 (defun el-init:nwp            () (null window-system))
 
-;; osによる分岐
 (defvar el-init:mac-regexp     "^init-mac-")
 (defvar el-init:windows-regexp "^init-windows-")
 (defvar el-init:linux-regexp   "^init-linux-")
@@ -198,7 +198,7 @@
       (el-init:next feature filename noerror))))
 
 
-;; 古い elc ファイルの検出
+;; old .elc files
 
 (defun el-init::ensure-string (object)
   (format "%s" object))
@@ -228,8 +228,6 @@
                       (and (el-init::old-library-p (or filename feature)) t))
   (el-init:next feature filename noerror))
 
-;; 古い elc ファイルのバイトコンパイル
-
 (defun el-init:require/compile-old-library (feature &optional filename noerror)
   (when (el-init::old-library-p (or filename feature))
     (let ((result (el-init::byte-compile-library (or filename feature))))
@@ -242,10 +240,8 @@
 
 ;;;; Loader
 
-;; directory-list, subdirectoriesの統一
-
-(defvar el-init:load-file-regexp "\\.elc?$" "読み込み対象ファイルの正規表現")
-(defvar el-init:load-directory-list '(".") "探索対象のディレクトリ")
+(defvar el-init:load-file-regexp "\\.elc?$")
+(defvar el-init:load-directory-list '("."))
 (defvar el-init:override-only-init-files-p t)
 (defvar el-init:before-load-hook nil)
 (defvar el-init:after-load-hook nil)
@@ -298,13 +294,10 @@
                         (directory-list el-init:load-directory-list)
                         (function-list el-init:load-function-list)
                         (override-only-init-files el-init:override-only-init-files-p)
-                        override)              ;require の乗っ取り
-  ;; フックの実行
+                        override)
   (run-hooks 'el-init:before-load-hook)
-  ;; load-pathへの追加
   (cl-dolist (dir (el-init::expand-directory-list directory directory-list))
     (add-to-list 'load-path dir))
-  ;; 各ファイルのロード
   (condition-case e
       (let* ((original
               (if override (symbol-function 'require) 'require))
@@ -325,7 +318,6 @@
                 (el-init:next feature))
             (el-init:next feature))))
     (error (el-init:alert (error-message-string e))))
-  ;; フックの実行
   (run-hooks 'el-init:after-load-hook))
 
 

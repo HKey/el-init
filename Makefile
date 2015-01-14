@@ -14,7 +14,8 @@ compile:
 	"(progn \
 	   (when (version<= \"24.3\" emacs-version) \
 	     (setq byte-compile-error-on-warn t)) \
-	   (batch-byte-compile))" el-init.el ./test/*.el
+	   (batch-byte-compile))" el-init.el
+	${CASK} exec ${EMACS} -Q -batch -L . -L ./test -f batch-byte-compile  ./test/*.el
 
 test:
 	${CASK} exec ert-runner

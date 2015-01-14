@@ -236,6 +236,19 @@
                           result)))
   (el-init:next feature filename noerror))
 
+
+;; lazy loading
+
+(defvar el-init:lazy-init-regexp "^init-lazy-\\(.+\\)$")
+
+(defun el-init:require/lazy (feature &optional filename noerror)
+  (save-match-data
+    (if (string-match el-init:lazy-init-regexp (symbol-name feature))
+        (eval-after-load (match-string 1 (symbol-name feature))
+          `(let ((el-init::require-wrappers ',el-init::require-wrappers))
+             (el-init:next ',feature ',filename ',noerror)))
+      (el-init:next feature filename noerror))))
+
 
 
 ;;;; Loader

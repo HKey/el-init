@@ -212,4 +212,19 @@
                                  'el-init:require/compile-old-library))
      (should (file-newer-than-file-p elc el)))))
 
+(ert-deftest el-init-test:require/lazy ()
+  (let* ((dir (el-init-test:get-path "test-inits/wrappers/lazy"))
+         (libdir (concat dir "/lib")))
+    (el-init-test:sandbox
+      (add-to-list 'load-path libdir)
+      (el-init:load dir
+                    :directory-list '(".")
+                    :function-list (list #'el-init:require/lazy))
+
+      (should-not (featurep 'init-lazy-lib-dummy))
+
+      (require 'lib-dummy)
+
+      (should (featurep 'init-lazy-lib-dummy)))))
+
 ;;; el-init-test.el ends here

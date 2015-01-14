@@ -36,7 +36,7 @@
       object
     (list object)))
 
-(defun el-init::file-name->symbol (file-name)
+(defun el-init::file-name-to-symbol (file-name)
   (intern
    (file-name-nondirectory
     (file-name-sans-extension file-name))))
@@ -44,7 +44,7 @@
 ;;;###autoload
 (defun el-init:provide ()
   (provide
-   (el-init::file-name->symbol
+   (el-init::file-name-to-symbol
     (or load-file-name
         (buffer-file-name)))))
 
@@ -318,7 +318,7 @@
               (append function-list (list original)))
              (init-features
               (cl-remove-duplicates
-               (mapcar #'el-init::file-name->symbol
+               (mapcar #'el-init::file-name-to-symbol
                        (el-init::target-files directory directory-list))))
              (overridden-require
               (el-init::make-overridden-require original

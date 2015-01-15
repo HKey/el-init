@@ -313,22 +313,33 @@
 ;;;###autoload
 (cl-defun el-init:load (directory
                         &key
-                        (directory-list el-init:subdirectories)
-                        (function-list el-init:wrappers)
+                        (subdirectories el-init:subdirectories)
+                        (wrappers el-init:wrappers)
                         (override-only-init-files el-init:override-only-init-files-p)
-                        override)
+                        override
+                        ;; for compatibility with 0.0.9
+                        (directory-list nil directory-list-flag)
+                        (function-list nil function-list-flag))
+  ;; for compatibility with 0.0.9
+  (when directory-list-flag
+    (setq subdirectories directory-list)
+    (warn "`:directory-list' parameter of `el-init:load' is obsolete; use `:subdirectories' instead."))
+  (when function-list-flag
+    (setq wrappers function-list)
+    (warn "`:function-list' parameter of `el-init:load' is obsolete; use `:wrappers' instead."))
+
   (run-hooks 'el-init:before-load-hook)
-  (cl-dolist (dir (el-init::expand-directory-list directory directory-list))
+  (cl-dolist (dir (el-init::expand-directory-list directory subdirectories))
     (add-to-list 'load-path dir))
   (condition-case e
       (let* ((original
               (if override (symbol-function 'require) 'require))
              (el-init::require-wrappers
-              (append function-list (list original)))
+              (append wrappers (list original)))
              (init-features
               (cl-remove-duplicates
                (mapcar #'el-init::file-name-to-symbol
-                       (el-init::target-files directory directory-list))))
+                       (el-init::target-files directory subdirectories))))
              (overridden-require
               (el-init::make-overridden-require original
                                                 el-init::require-wrappers

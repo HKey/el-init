@@ -46,8 +46,8 @@
      (should-not (featurep 'init-test-c))
 
      (el-init:load target-directory
-                   :directory-list '(".")
-                   :function-list  nil)
+                   :subdirectories '(".")
+                   :wrappers nil)
 
      (should     (featurep 'init-test-a))
      (should-not (featurep 'init-test-b))
@@ -60,8 +60,8 @@
      (should-not (featurep 'init-test-c))
 
      (el-init:load target-directory
-                   :directory-list '("." "subdir1")
-                   :function-list  nil)
+                   :subdirectories '("." "subdir1")
+                   :wrappers nil)
 
      (should     (featurep 'init-test-a))
      (should     (featurep 'init-test-b))
@@ -74,8 +74,8 @@
      (should-not (featurep 'init-test-c))
 
      (el-init:load target-directory
-                   :directory-list '("." ("subdir1" t))
-                   :function-list  nil)
+                   :subdirectories '("." ("subdir1" t))
+                   :wrappers nil)
 
      (should (featurep 'init-test-a))
      (should (featurep 'init-test-b))
@@ -86,8 +86,8 @@
            (fn (lambda (only-init-files)
                  (add-to-list 'load-path target-directory)
                  (el-init:load target-directory
-                               :directory-list '("override")
-                               :function-list
+                               :subdirectories '("override")
+                               :wrappers
                                (list
                                 (lambda (feature &optional filename noerror)
                                   (push feature feature-list)
@@ -114,8 +114,8 @@
 (ert-deftest el-init-test:require/benchmark ()
   (el-init-test:sandbox
    (el-init:load (el-init-test:get-path "test-inits/wrappers/benchmark")
-                 :directory-list '(".")
-                 :function-list (list #'el-init:require/benchmark))
+                 :subdirectories '(".")
+                 :wrappers (list #'el-init:require/benchmark))
 
    (let ((record (el-init:get-record 'init-test-benchmark
                                      'el-init:require/benchmark)))
@@ -125,8 +125,8 @@
 (ert-deftest el-init-test:require/record-error ()
   (el-init-test:sandbox
    (el-init:load (el-init-test:get-path "test-inits/wrappers/error")
-                 :directory-list '(".")
-                 :function-list (list #'el-init:require/record-error))
+                 :subdirectories '(".")
+                 :wrappers (list #'el-init:require/record-error))
 
    (should (equal (el-init:get-record 'init-test-error
                                       'el-init:require/record-error)
@@ -137,8 +137,8 @@
    (let ((caught nil))
      (condition-case e
          (el-init:load (el-init-test:get-path "test-inits/wrappers/error")
-                       :directory-list '(".")
-                       :function-list (list #'el-init:require/ignore-errors))
+                       :subdirectories '(".")
+                       :wrappers (list #'el-init:require/ignore-errors))
        (error (setq caught e)))
 
      (should (null caught)))))
@@ -146,8 +146,8 @@
 (ert-deftest el-init-test:require/record-eval-after-load-error ()
   (el-init-test:sandbox
    (el-init:load (el-init-test:get-path "test-inits/wrappers/eval-after-load")
-                 :directory-list '("error")
-                 :function-list (list #'el-init:require/record-eval-after-load-error))
+                 :subdirectories '("error")
+                 :wrappers (list #'el-init:require/record-eval-after-load-error))
    (add-to-list 'load-path
                 (el-init-test:get-path "test-inits/wrappers/eval-after-load"))
    (require 'init-test-library)
@@ -161,8 +161,8 @@
 (ert-deftest el-init-test:require/system-case ()
   (el-init-test:sandbox
    (el-init:load (el-init-test:get-path "test-inits/wrappers/system-case")
-                 :directory-list '(".")
-                 :function-list (list #'el-init:require/system-case))
+                 :subdirectories '(".")
+                 :wrappers (list #'el-init:require/system-case))
 
    (should (= (length (cl-remove-if-not #'featurep
                                         '(init-mac-test
@@ -177,8 +177,8 @@
          (fn  (lambda ()
                 (el-init:load
                  dir
-                 :directory-list '(".")
-                 :function-list (list #'el-init:require/record-old-library))))
+                 :subdirectories '(".")
+                 :wrappers (list #'el-init:require/record-old-library))))
          (rec (lambda ()
                 (el-init:get-record 'init-test
                                     'el-init:require/record-old-library))))
@@ -206,8 +206,8 @@
 
     (el-init-test:sandbox
      (el-init:load dir
-                   :directory-list '(".")
-                   :function-list (list #'el-init:require/compile-old-library))
+                   :subdirectories '(".")
+                   :wrappers (list #'el-init:require/compile-old-library))
      (should (el-init:get-record 'init-test
                                  'el-init:require/compile-old-library))
      (should (file-newer-than-file-p elc el)))))
@@ -218,8 +218,8 @@
     (el-init-test:sandbox
       (add-to-list 'load-path libdir)
       (el-init:load dir
-                    :directory-list '(".")
-                    :function-list (list #'el-init:require/lazy))
+                    :subdirectories '(".")
+                    :wrappers (list #'el-init:require/lazy))
 
       (should-not (featurep 'init-lazy-lib-dummy))
 

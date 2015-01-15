@@ -81,7 +81,7 @@
 
 (defvar el-init:alert-buffer-name "*el-init alerts*")
 
-(defvar el-init:alert-function #'el-init::default-alert)
+(defvar el-init:alert-function #'el-init:default-alert)
 
 (defvar el-init:alert-enable-p t)
 
@@ -89,7 +89,7 @@
   (when el-init:alert-enable-p
     (funcall el-init:alert-function message)))
 
-(defun el-init::default-alert (message)
+(defun el-init:default-alert (message)
   (display-warning 'el-init message nil el-init:alert-buffer-name))
 
 

@@ -261,6 +261,7 @@
 (defvar el-init:load-file-regexp "\\.elc?$")
 (defvar el-init:subdirectories '("."))
 (defvar el-init:override-only-init-files-p t)
+(defvar el-init:overridep t)
 (defvar el-init:before-load-hook nil)
 (defvar el-init:after-load-hook nil)
 
@@ -316,7 +317,7 @@
                         (subdirectories el-init:subdirectories)
                         (wrappers el-init:wrappers)
                         (override-only-init-files el-init:override-only-init-files-p)
-                        override
+                        (override el-init:overridep)
                         ;; for compatibility with 0.0.9
                         (directory-list nil directory-list-flag)
                         (function-list nil function-list-flag))

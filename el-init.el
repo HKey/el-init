@@ -96,7 +96,12 @@
 
 ;;;; Require Wrapper
 
-(defvar el-init:load-function-list '(el-init:require/record-error))
+(defvar el-init:wrappers '(el-init:require/record-error))
+
+(define-obsolete-variable-alias
+  'el-init:load-function-list
+  'el-init:wrappers
+  "0.1.0")
 
 (defvar el-init::require-wrappers nil)
 
@@ -254,11 +259,15 @@
 ;;;; Loader
 
 (defvar el-init:load-file-regexp "\\.elc?$")
-(defvar el-init:load-directory-list '("."))
+(defvar el-init:subdirectories '("."))
 (defvar el-init:override-only-init-files-p t)
 (defvar el-init:before-load-hook nil)
 (defvar el-init:after-load-hook nil)
 
+(define-obsolete-variable-alias
+  'el-init:load-directory-list
+  'el-init:subdirectories
+  "0.1.0")
 
 (defun el-init::path-concat (&rest paths)
   (expand-file-name
@@ -304,8 +313,8 @@
 ;;;###autoload
 (cl-defun el-init:load (directory
                         &key
-                        (directory-list el-init:load-directory-list)
-                        (function-list el-init:load-function-list)
+                        (directory-list el-init:subdirectories)
+                        (function-list el-init:wrappers)
                         (override-only-init-files el-init:override-only-init-files-p)
                         override)
   (run-hooks 'el-init:before-load-hook)

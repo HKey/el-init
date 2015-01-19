@@ -97,14 +97,14 @@ Example:
   "A function which is called by `el-init:alert'.
 It has a parameter which is a string to display like `el-init:default-alert'.")
 
-(defvar el-init:alert-enable-p t
+(defvar el-init:alert-enabled-p t
   "When its value is non-nil, `el-init:alert' displays messages.")
 
 (defun el-init:alert (message)
   "Display MESSAGE as an alert.
-When `el-init:alert-enable-p' is nil, this function does nothing.
+When `el-init:alert-enabled-p' is nil, this function does nothing.
 This function just calls `el-init:alert-function'."
-  (when el-init:alert-enable-p
+  (when el-init:alert-enabled-p
     (funcall el-init:alert-function message)))
 
 (defun el-init:default-alert (message)

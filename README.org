@@ -1,5 +1,8 @@
 * el-init
 
+[[https://travis-ci.org/HKey/el-init][https://travis-ci.org/HKey/el-init.svg?branch=master]]
+[[https://coveralls.io/r/HKey/el-init?branch=master][https://coveralls.io/repos/HKey/el-init/badge.svg?branch=master]]
+
 A loader inspired by [[https://github.com/emacs-jp/init-loader][init-loader]]. \\
 It loads split configuration files with =require= instead of =load=.
 

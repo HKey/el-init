@@ -1,0 +1,32 @@
+* el-init ChangeLog
+
+** 0.1.0
+
+[[https://github.com/HKey/el-init/compare/0.0.9...0.1.0][commits]]
+
+- Use lexical binding
+
+- =el-init:define-require= is now obsolete
+
+- =property= parameters of =el-init:get-record= and =el-init:add-record= are
+  now required ones
+
+- =el-init:provide= is now a function
+
+- Add an alert function =el-init:alert=
+
+- Add a =require= wrapper function =el-init:require/lazy=
+
+- Change the record types
+  - =el-init:require/compile-old-library=
+  - =el-init:require/record-old-library=
+  - =el-init:require/record-error=
+  - =el-init:require/record-eval-after-load=
+
+- Parameters of =el-init:load=
+  - Add =override-only-init-files= parameter and it is enabled by default
+  - =override= parameter is now enabled by default
+  - Remove =compile= parameter
+  - Rename =directory-list= parameter to =subdirectories= and it is now
+    =(".")= by default
+  - Rename =function-list= parameter to =wrappers=

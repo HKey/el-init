@@ -10,6 +10,7 @@ It loads split configuration files with =require= instead of =load=.
 
 - [[https://github.com/rolandwalker/anaphora][anaphora]]
 - cl-lib
+- Emacs 24 or later
 
 ** Basic Usage
 

@@ -4,7 +4,7 @@
 
 ;; Author: Hiroki YAMAKAWA <s06139@gmail.com>
 ;; Version: 0.1.0
-;; Package-Requires: ((cl-lib "0.5") (anaphora "1.0.0"))
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (anaphora "1.0.0"))
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify

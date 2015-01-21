@@ -1,0 +1,129 @@
+* el-init
+
+A loader inspired by [[https://github.com/emacs-jp/init-loader][init-loader]]. \\
+It loads split configuration files with =require= instead of =load=.
+
+** Requirements
+
+- [[https://github.com/rolandwalker/anaphora][anaphora]]
+- cl-lib
+
+** Basic Usage
+
+For example, there are configuration files like below,
+
+#+BEGIN_EXAMPLE
+  ~/.emacs.d/inits
+  ├── ext/
+  │   └── init-helm.el
+  ├── lang/
+  │   ├── init-emacs-lisp.el
+  │   └── init-javascript.el
+  └── init-package.el
+#+END_EXAMPLE
+
+you load them with following code.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'el-init)
+
+  (el-init:load "~/.emacs.d/inits"
+                :subdirectories '("." "ext" "lang"))
+#+END_SRC
+
+** Mechanism of =el-init:load=
+
+=el-init:load= adds the elements of =subdirectories= argument to =load-path=.
+Then, =el-init:load= calls =require= for all the configuration files in all the
+directories of =subdirectories= argument.
+
+So you have to call =provide= or =el-init:provide= in configuration files.
+=el-init:provide= is an utility to call =provide= with the file name as a
+feature name.
+
+** Features
+
+- Determination of non-numbering loading order
+- User extensible =require= wrapper system
+
+*** Loading Order
+
+There are two ways to determination of loading order.
+
+**** Using =subdirectories= parameter
+
+=el-init:load= loads configuration files in order of =subdirectories= parameter.
+So if you want to load some configuration files earlier, put them into
+the directory top of =subdirectories=.
+
+**** Using =require=
+
+If a configuration file depends on other configuration files, load requirements
+with =require= in the configuration file.
+
+*** =require= Wrapper
+
+You can customize =require= used by =el-init:load= to whatever you want,
+for example measuring load times and catching errors.
+
+If you want to set wrappers for loading of =el-init:load=, use =wrappers=
+parameter of =el-init:load=.
+
+For example, you want to use =el-init:require/record-error= and
+=el-init:require/record-eval-after-load-error=, call =el-init:load= like below.
+
+#+BEGIN_SRC emacs-lisp
+  (el-init:load "~/.emacs.d/inits"
+                :subdirectories '("." "ext" "lang")
+                :wrappers '(el-init:require/record-error
+                            el-init:require/record-eval-after-load-error))
+#+END_SRC
+
+**** How to Define a Wrapper
+
+A =require= wrapper is a function which has the same parameters as =require=
+and calls =el-init:next= like =require=.
+If you want to ignore errors, write a wrapper like below.
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-require/ignore-errors (feature &optional filename noerror)
+    (ignore-errors (el-init:next feature filename noerror)))
+#+END_SRC
+
+=el-init:next= calls the next wrapper.
+If there are no wrappers to call, =el-init:next= calls =require=.
+So a wrapper can skip loading by not calling =el-init:next=.
+
+**** El-init Wrappers
+
+***** =el-init:require/benchmark=
+
+Benchmarks loading configuration files.
+
+***** =el-init:require/record-error=
+
+Records errors while loading configuration files.
+
+***** =el-init:require/ignore-errors=
+
+Ignores errors while loading configuration files.
+
+***** =el-init:require/record-eval-after-load-error=
+
+Records errors which occur in =eval-after-load= form.
+
+***** =el-init:require/system-case=
+
+Switches configuration files to load by the execution environment.
+
+***** =el-init:require/record-old-library=
+
+Records whether a configuration file has an old .elc file.
+
+***** =el-init:require/compile-old-library=
+
+Compiles old .elc files of configuration files.
+
+***** =el-init:require/lazy=
+
+Provides lazy loading for configuration files.

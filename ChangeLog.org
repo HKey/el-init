@@ -1,5 +1,11 @@
 * el-init ChangeLog
 
+** 0.1.1
+
+[[https://github.com/HKey/el-init/compare/0.1.0...0.1.1][commits]]
+
+- Change the namespace prefix: =el-init:= to =el-init-=
+
 ** 0.1.0
 
 [[https://github.com/HKey/el-init/compare/0.0.9...0.1.0][commits]]

@@ -143,24 +143,24 @@ This function just calls `el-init-alert-function'."
         (el-init--require-wrappers (cdr el-init--require-wrappers)))
     (funcall fn feature filename noerror)))
 
-(defmacro el-init-define-require (name &rest body)
+(defmacro el-init:define-require (name &rest body)
   "This is an obsolete macro.
 
 Migration guide:
-- Change `el-init-define-require' to `defun'
+- Change `el-init:define-require' to `defun'
 - Add parameter list: (feature &optional filename noerror)
 - Add feature, filename and noerror to calling `el-init-next'
 
 Example:
   ;; version 0.0.9
-  (el-init-define-require my-require/ignore-errors
+  (el-init:define-require my-require/ignore-errors
     (ignore-errors (el-init-next)))
 
   ;; version 0.1.0
   (defun my-require/ignore-errors (feature &optional filename noerror)
     (ignore-errors (el-init-next feature filename noerror)))"
   (declare (indent 1))
-  (warn "`el-init-define-require' is obsolete.")
+  (warn "`el-init:define-require' is obsolete.")
   (let ((next (cl-gensym)))
     `(defun ,name (feature &optional filename noerror)
        (cl-labels ((,next () (el-init-next feature filename noerror)))
@@ -442,12 +442,12 @@ This wrapper records no values."
   "A hook which is run after loading of `el-init-load'.")
 
 (define-obsolete-variable-alias
-  'el-init-load-function-list
+  'el-init:load-function-list
   'el-init-wrappers
   "0.1.0")
 
 (define-obsolete-variable-alias
-  'el-init-load-directory-list
+  'el-init:load-directory-list
   'el-init-subdirectories
   "0.1.0")
 

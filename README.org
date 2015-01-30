@@ -133,3 +133,70 @@ Compiles old .elc files of configuration files.
 ***** =el-init-require/lazy=
 
 Provides lazy loading for configuration files.
+
+** Migration from init-loader
+
+*** Add =provide=
+
+Add =provide= to the end of file of each configuration file which is
+loaded by init-loader.
+
+#+BEGIN_SRC emacs-lisp
+  (provide 'CONFIGURATION-FILE-NAME)
+  ;; EOF
+#+END_SRC
+
+You can also use =el-init-provide= instead of =provide=, like below.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'el-init) ; It works without this line, but recommended.
+  (el-init-provide)
+  ;; EOF
+#+END_SRC
+
+*** Add =require= properly
+
+If a configuration file depends on other configuration files,
+add =require= to the beginning of the configuration file.
+Because el-init doesn't determine the loading order by the file name.
+
+For example, if =30-foo.el= depends on =20-bar.el=,
+you have to add =(require '20-bar)= to the beginning of =30-foo.el=.
+
+#+BEGIN_SRC emacs-lisp
+  ;; BOF
+  (require '20-bar)
+#+END_SRC
+
+This will probably be hard work.
+If so, go to the next step and do this step gradually.
+
+*** Change =init-loader-load= to =el-init-load=
+
+If your setting of init-loader like below,
+
+#+BEGIN_SRC emacs-lisp
+  (require 'init-loader)
+
+  (init-loader-load "~/.emacs.d/init")
+#+END_SRC
+
+change it to the code below.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'el-init)
+
+  (setq el-init-meadow-regexp       "\\`meadow-"
+        el-init-carbon-emacs-regexp "\\`carbon-emacs-"
+        el-init-cocoa-emacs-regexp  "\\`cocoa-emacs-"
+        el-init-nw-regexp           "\\`nw-"
+        el-init-mac-regexp          "\\`mac-"
+        el-init-windows-regexp      "\\`windows-"
+        el-init-linux-regexp        "\\`linux-"
+        el-init-freebsd-regexp      "\\`freebsd-")
+
+  (el-init-load "~/.emacs.d/init"
+                :subdirectories '(".")
+                :wrappers '(el-init-require/record-error
+                            el-init-require/system-case))
+#+END_SRC

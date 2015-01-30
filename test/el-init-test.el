@@ -107,7 +107,21 @@
       (el-init-test-sandbox
        (funcall fn nil)
        (should (memq 'init-test-a        feature-list))
-       (should (memq 'init-test-override feature-list))))))
+       (should (memq 'init-test-override feature-list))))
+
+    ;; `el-init-override-only-init-files-p'
+    (let ((overridden nil))
+      (el-init-test-sandbox
+        (el-init-load target-directory
+                      :subdirectories '("in-overridden-require-p/a"
+                                        "in-overridden-require-p/b")
+                      :wrappers (list
+                                 (lambda (feature &optional filename noerror)
+                                   (when el-init-overriden-require-p
+                                     (push feature overridden))
+                                   (el-init-next feature filename noerror)))
+                      :override t)
+        (should (equal '(init-b) overridden))))))
 
 ;;;; Require Wrappers
 

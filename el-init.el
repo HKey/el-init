@@ -441,7 +441,7 @@ This wrapper records no values."
 (defvar el-init-after-load-hook nil
   "A hook which is run after loading of `el-init-load'.")
 
-(defvar el-init-overriden-require-p nil
+(defvar el-init-overridden-require-p nil
   "A flag to check wrappers are called as overridden `require'.
 If the value is non-nil, the wrapper is called as overridden `require'.")
 
@@ -493,7 +493,7 @@ If the value is non-nil, the wrapper is called as overridden `require'.")
     (if (or (not only-init-files)
             (memq feature init-features))
         (let ((el-init--require-wrappers wrappers)
-              (el-init-overriden-require-p t))
+              (el-init-overridden-require-p t))
           (el-init-next feature filename noerror))
       (funcall original feature filename noerror))))
 

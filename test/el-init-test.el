@@ -117,7 +117,7 @@
                                         "in-overridden-require-p/b")
                       :wrappers (list
                                  (lambda (feature &optional filename noerror)
-                                   (when el-init-overriden-require-p
+                                   (when el-init-overridden-require-p
                                      (push feature overridden))
                                    (el-init-next feature filename noerror)))
                       :override t)

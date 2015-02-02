@@ -227,18 +227,40 @@
      (should (file-newer-than-file-p elc el)))))
 
 (ert-deftest el-init-test-require/lazy ()
-  (let* ((dir (el-init-test-get-path "test-inits/wrappers/lazy"))
-         (libdir (concat dir "/lib")))
-    (el-init-test-sandbox
-      (add-to-list 'load-path libdir)
-      (el-init-load dir
-                    :subdirectories '(".")
-                    :wrappers (list #'el-init-require/lazy))
+  (let ((dir (el-init-test-get-path "test-inits/wrappers/lazy")))
+    (let* ((basic  (concat dir "/basic"))
+           (libdir (concat basic "/lib")))
+      (el-init-test-sandbox
+        (add-to-list 'load-path libdir)
+        (el-init-load basic
+                      :subdirectories '(".")
+                      :wrappers (list #'el-init-require/lazy))
 
-      (should-not (featurep 'init-lazy-lib-dummy))
+        (should-not (featurep 'init-lazy-lib-dummy))
 
-      (require 'lib-dummy)
+        (require 'lib-dummy)
 
-      (should (featurep 'init-lazy-lib-dummy)))))
+        (should (featurep 'init-lazy-lib-dummy))))
+
+    ;; recursive loading
+    ;;
+    ;; If `el-init-require/lazy' called `require' to load lib-foo.el
+    ;; before loading init-lazy-lib-foo.el, init-lazy-lib-foo.el would
+    ;; be loaded twice by the following steps.
+    ;;
+    ;; * `eval-after-load' registers init-lazy-lib-foo.el.
+    ;; * `require' loads init-foo.el.
+    ;;  * init-foo.el: `require' loads init-lazy-lib-foo.el.
+    ;;   * init-lazy-lib-foo.el: `require' loads lib-foo.el.
+    ;;    * `require' loads init-lazy-lib-foo.el by the form of `eval-after-load'.
+    (let* ((rec    (concat dir "/recursive"))
+           (libdir (concat rec "/lib")))
+      (el-init-test-sandbox
+        (add-to-list 'load-path libdir)
+        (el-init-load rec
+                      :subdirectories '("init-lazy" "init")
+                      :wrappers (list #'el-init-require/lazy))
+
+        (should (= el-init-test-init-lazy-recursive-count 1))))))
 
 ;;; el-init-test.el ends here

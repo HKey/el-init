@@ -143,6 +143,10 @@ This function just calls `el-init-alert-function'."
         (el-init--require-wrappers (cdr el-init--require-wrappers)))
     (funcall fn feature filename noerror)))
 
+(defvar el-init-overridden-require-p nil
+  "A flag to check wrappers are called as overridden `require'.
+If the value is non-nil, the wrapper is called as overridden `require'.")
+
 (defmacro el-init:define-require (name &rest body)
   "This is an obsolete macro.
 
@@ -410,11 +414,18 @@ If a configuration file feature name matches `el-init-lazy-init-regexp',
 this calls `eval-after-load' instead of loading it.
 This wrapper records no values."
   (save-match-data
-    (if (string-match el-init-lazy-init-regexp (symbol-name feature))
-        (eval-after-load (match-string 1 (symbol-name feature))
-          `(let ((el-init--require-wrappers ',el-init--require-wrappers))
-             (el-init-next ',feature ',filename ',noerror)))
-      (el-init-next feature filename noerror))))
+    (let ((matchp (string-match el-init-lazy-init-regexp (symbol-name feature)))
+          (target-feature (match-string 1 (symbol-name feature))))
+      (cond ((and matchp (not el-init-overridden-require-p))
+             (eval-after-load target-feature
+               `(let ((el-init--require-wrappers ',el-init--require-wrappers))
+                  (el-init-next ',feature ',filename ',noerror))))
+            ((and matchp el-init-overridden-require-p)
+             ;; to prevent loading configuration files recursively
+             (require (intern target-feature))
+             (el-init-next feature filename noerror))
+            (t
+             (el-init-next feature filename noerror))))))
 
 
 
@@ -440,10 +451,6 @@ This wrapper records no values."
 
 (defvar el-init-after-load-hook nil
   "A hook which is run after loading of `el-init-load'.")
-
-(defvar el-init-overridden-require-p nil
-  "A flag to check wrappers are called as overridden `require'.
-If the value is non-nil, the wrapper is called as overridden `require'.")
 
 (define-obsolete-variable-alias
   'el-init:load-function-list

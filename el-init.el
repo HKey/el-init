@@ -176,6 +176,9 @@ Example:
 ;;;; Require Wrapper Definitions
 
 ;; benchmark
+
+(defvar el-init--benchmark-child-results nil)
+
 (defun el-init-require/benchmark (feature &optional filename noerror)
   "A `require' wrapper function to benchmark loading FEATURE with `benchmark-run'.
 Its score is a list as a return value of `benchmark-run' and recorded to
@@ -184,9 +187,19 @@ Its score is a list as a return value of `benchmark-run' and recorded to
 Example:
   (el-init-get-record 'init-foo 'el-init-require/benchmark)
   ;; => (3.6666e-05 0 0.0)"
-  (let ((result (benchmark-run (el-init-next feature filename noerror))))
-    (unless (el-init-get-record feature 'el-init-require/benchmark)
-      (el-init-add-record feature 'el-init-require/benchmark result))))
+  (let ((result nil))
+    (let ((el-init--benchmark-child-results nil))
+      (setq result (benchmark-run (el-init-next feature filename noerror)))
+      (unless (el-init-get-record feature 'el-init-require/benchmark)
+        (el-init-add-record feature
+                            'el-init-require/benchmark
+                            ;; exclude child results
+                            (apply #'cl-mapcar
+                                   #'-
+                                   result
+                                   '(0.0 0 0.0) ; to prevent negating result
+                                   el-init--benchmark-child-results))))
+    (push result el-init--benchmark-child-results)))
 
 
 ;; record error

@@ -86,9 +86,11 @@ Example:
   "Get a record plist of FEATURE from `el-init-record'."
   (cdr (assoc feature el-init-record)))
 
-(defun el-init-get-record (feature property)
-  "Get a record value of PROPERTY of FEATURE from `el-init-record'."
-  (plist-get (el-init-get-feature-record feature) property))
+(defun el-init-get-record (feature property &optional default)
+  "Get a record value of PROPERTY of FEATURE from `el-init-record' or DEFAULT."
+  (cl-getf (el-init-get-feature-record feature)
+           property
+           default))
 
 (defun el-init-add-record (feature property value)
   "Add a record value of PROPERTY of FEATURE to `el-init-record'."
@@ -100,9 +102,10 @@ Example:
 (with-no-warnings
   ;; Since emacs 24.3, `defsetf' has been obsolete.
   (if (fboundp 'gv-define-setter)
-      (gv-define-setter el-init-get-record (value feature property)
+      (gv-define-setter el-init-get-record
+          (value feature property &optional _default)
         `(el-init-add-record ,feature ,property ,value))
-    (defsetf el-init-get-record (feature property) (value)
+    (defsetf el-init-get-record (feature property &optional _default) (value)
       `(el-init-add-record ,feature ,property ,value))))
 
 

@@ -429,19 +429,20 @@ This is used by `el-init-require/lazy'.")
 If a configuration file feature name matches `el-init-lazy-init-regexp',
 this calls `eval-after-load' instead of loading it.
 This wrapper records no values."
-  (save-match-data
-    (let ((matchp (string-match el-init-lazy-init-regexp (symbol-name feature)))
-          (target-feature (match-string 1 (symbol-name feature))))
-      (cond ((and matchp (not el-init-overridden-require-p))
-             (eval-after-load target-feature
-               `(let ((el-init--require-wrappers ',el-init--require-wrappers))
-                  (el-init-next ',feature ',filename ',noerror))))
-            ((and matchp el-init-overridden-require-p)
-             ;; to prevent loading configuration files recursively
-             (require (intern target-feature))
-             (el-init-next feature filename noerror))
-            (t
-             (el-init-next feature filename noerror))))))
+  (let ((lazy-feature
+         (save-match-data
+           (when (string-match el-init-lazy-init-regexp (symbol-name feature))
+             (match-string 1 (symbol-name feature))))))
+    (cond ((and lazy-feature (not el-init-overridden-require-p))
+           (eval-after-load lazy-feature
+             `(let ((el-init--require-wrappers ',el-init--require-wrappers))
+                (el-init-next ',feature ',filename ',noerror))))
+          ((and lazy-feature el-init-overridden-require-p)
+           ;; to prevent loading configuration files recursively
+           (require (intern lazy-feature))
+           (el-init-next feature filename noerror))
+          (t
+           (el-init-next feature filename noerror)))))
 
 
 

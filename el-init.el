@@ -556,7 +556,7 @@ The mechanism:
   (run-hooks 'el-init-before-load-hook)
   (cl-dolist (dir (el-init--expand-directory-list directory subdirectories))
     (add-to-list 'load-path dir))
-  (condition-case e
+  (condition-case-unless-debug e
       (let* ((original
               (if override (symbol-function 'require) 'require))
              (el-init--require-wrappers

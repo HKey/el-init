@@ -3,6 +3,7 @@
 ;; Copyright (C) 2015  Hiroki YAMAKAWA
 
 ;; Author: Hiroki YAMAKAWA <s06139@gmail.com>
+;; URL: https://github.com/HKey/el-init
 ;; Version: 0.1.4
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (anaphora "1.0.0"))
 ;; Keywords:

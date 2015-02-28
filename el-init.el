@@ -151,30 +151,6 @@ This function just calls `el-init-alert-function'."
   "A flag to check wrappers are called as overridden `require'.
 If the value is non-nil, the wrapper is called as overridden `require'.")
 
-(defmacro el-init:define-require (name &rest body)
-  "This is an obsolete macro.
-
-Migration guide:
-- Change `el-init:define-require' to `defun'
-- Add parameter list: (feature &optional filename noerror)
-- Add feature, filename and noerror to calling `el-init-next'
-
-Example:
-  ;; version 0.0.9
-  (el-init:define-require my-require/ignore-errors
-    (ignore-errors (el-init-next)))
-
-  ;; version 0.1.0
-  (defun my-require/ignore-errors (feature &optional filename noerror)
-    (ignore-errors (el-init-next feature filename noerror)))"
-  (declare (indent 1))
-  (warn "`el-init:define-require' is obsolete.")
-  (let ((next (cl-gensym)))
-    `(defun ,name (feature &optional filename noerror)
-       (cl-labels ((,next () (el-init-next feature filename noerror)))
-         (cl-macrolet ((el-init-next () '(,next)))
-           ,@body)))))
-
 
 
 ;;;; Require Wrapper Definitions
@@ -470,16 +446,6 @@ This wrapper records no values."
 (defvar el-init-after-load-hook nil
   "A hook which is run after loading of `el-init-load'.")
 
-(define-obsolete-variable-alias
-  'el-init:load-function-list
-  'el-init-wrappers
-  "0.1.0")
-
-(define-obsolete-variable-alias
-  'el-init:load-directory-list
-  'el-init-subdirectories
-  "0.1.0")
-
 (defun el-init--path-concat (&rest paths)
   (expand-file-name
    (cl-reduce (lambda (x y) (concat (file-name-as-directory x) y))
@@ -528,10 +494,7 @@ This wrapper records no values."
                         (subdirectories el-init-subdirectories)
                         (wrappers el-init-wrappers)
                         (override-only-init-files el-init-override-only-init-files-p)
-                        (override el-init-overridep)
-                        ;; for compatibility with 0.0.9
-                        (directory-list nil directory-list-flag)
-                        (function-list nil function-list-flag))
+                        (override el-init-overridep))
   "Load configuration files in DIRECTORY with `require'.
 
 DIRECTORY is a path of a directory which is root of configuration files.
@@ -546,14 +509,6 @@ configuration files.
 The mechanism:
 - Add SUBDIRECTORIES to `load-path'
 - Call `require' for all the configure files in SUBDIRECTORIES"
-  ;; for compatibility with 0.0.9
-  (when directory-list-flag
-    (setq subdirectories directory-list)
-    (warn "`:directory-list' parameter of `el-init-load' is obsolete; use `:subdirectories' instead."))
-  (when function-list-flag
-    (setq wrappers function-list)
-    (warn "`:function-list' parameter of `el-init-load' is obsolete; use `:wrappers' instead."))
-
   (run-hooks 'el-init-before-load-hook)
   (cl-dolist (dir (el-init--expand-directory-list directory subdirectories))
     (add-to-list 'load-path dir))

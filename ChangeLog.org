@@ -11,7 +11,7 @@
   - =directory-list= parameter of =el-init-load=
   - =function-list= parameter of =el-init-load=
 
-- Removed old namespace, "el-init:" ([[https://github.com/HKey/el-init/issues/6][#6]])
+- Removed old namespace, =el-init:= ([[https://github.com/HKey/el-init/issues/6][#6]])
 
 ** 0.1.4
 

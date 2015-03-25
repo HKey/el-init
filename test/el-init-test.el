@@ -229,18 +229,25 @@
 (ert-deftest el-init-test-require/lazy ()
   (let ((dir (el-init-test-get-path "test-inits/wrappers/lazy")))
     (let* ((basic  (concat dir "/basic"))
-           (libdir (concat basic "/lib")))
-      (el-init-test-sandbox
-        (add-to-list 'load-path libdir)
-        (el-init-load basic
-                      :subdirectories '(".")
-                      :wrappers (list #'el-init-require/lazy))
+           (libdir (concat basic "/lib"))
+           (fn     (lambda ()
+                     (el-init-test-sandbox
+                       (add-to-list 'load-path libdir)
+                       (el-init-load basic
+                                     :subdirectories '(".")
+                                     :wrappers (list #'el-init-require/lazy))
 
-        (should-not (featurep 'init-lazy-lib-dummy))
+                       (should-not (featurep 'init-lazy-lib-dummy))
 
-        (require 'lib-dummy)
+                       (require 'lib-dummy)
 
-        (should (featurep 'init-lazy-lib-dummy))))
+                       (should (featurep 'init-lazy-lib-dummy))))))
+
+      (let ((el-init-lazy-feature-type 'string))
+        (funcall fn))
+
+      (let ((el-init-lazy-feature-type 'symbol))
+        (funcall fn)))
 
     ;; recursive loading
     ;;

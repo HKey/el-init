@@ -401,22 +401,34 @@ The first group of the regexp indicates a feature name as an argument
 of `eval-after-load'.
 This is used by `el-init-require/lazy'.")
 
+(defvar el-init-lazy-feature-type 'symbol
+  "A type of FILE argument of `eval-after-load' used by `el-init-require/lazy'.
+This can be `symbol' or `string'.")
+
 (defun el-init-require/lazy (feature &optional filename noerror)
   "A `require' wrapper function for lazy loading.
 If a configuration file feature name matches `el-init-lazy-init-regexp',
 this calls `eval-after-load' instead of loading it.
 This wrapper records no values."
-  (let ((lazy-feature
-         (save-match-data
-           (when (string-match el-init-lazy-init-regexp (symbol-name feature))
-             (match-string 1 (symbol-name feature))))))
+  (let* ((lazy-feature
+          (save-match-data
+            (when (string-match el-init-lazy-init-regexp (symbol-name feature))
+              (match-string 1 (symbol-name feature)))))
+         (lazy-feature-symbol
+          (awhen lazy-feature (intern it)))
+         (file
+          (cl-case el-init-lazy-feature-type
+            (string lazy-feature)
+            (symbol lazy-feature-symbol)
+            (t (error
+                "`el-init-lazy-feature-type' must be `symbol' or `string'")))))
     (cond ((and lazy-feature (not el-init-overridden-require-p))
-           (eval-after-load lazy-feature
+           (eval-after-load file
              `(let ((el-init--require-wrappers ',el-init--require-wrappers))
                 (el-init-next ',feature ',filename ',noerror))))
           ((and lazy-feature el-init-overridden-require-p)
            ;; to prevent loading configuration files recursively
-           (require (intern lazy-feature))
+           (require lazy-feature-symbol)
            (el-init-next feature filename noerror))
           (t
            (el-init-next feature filename noerror)))))

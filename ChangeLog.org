@@ -13,6 +13,12 @@
 
 - Removed old namespace, =el-init:= ([[https://github.com/HKey/el-init/issues/6][#6]])
 
+- Added an option, =el-init-lazy-feature-type= ([[https://github.com/HKey/el-init/pull/9][#9]]) \\
+  This option controls the =file= argument type of =eval-after-load= in
+  =el-init-require/lazy=.
+  =el-init-require/lazy= was changed to use symbol as default.
+
+
 ** 0.1.4
 
 [[https://github.com/HKey/el-init/compare/0.1.3...0.1.4][commits]]

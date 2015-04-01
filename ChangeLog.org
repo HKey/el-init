@@ -2,7 +2,7 @@
 
 ** 0.1.5
 
-[[https://github.com/HKey/el-init/compare/0.1.4...master][commits]]
+[[https://github.com/HKey/el-init/compare/0.1.4...0.1.5][commits]]
 
 - Removed obsolete things ([[https://github.com/HKey/el-init/issues/4][#4]])
   - =el-init:define-require=
@@ -17,7 +17,6 @@
   This option controls the =file= argument type of =eval-after-load= in
   =el-init-require/lazy=.
   =el-init-require/lazy= was changed to use symbol as default.
-
 
 ** 0.1.4
 

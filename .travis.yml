@@ -25,8 +25,6 @@ env:
   - EVM_EMACS=emacs-24.1-bin COVERALLS=no
   - EVM_EMACS=emacs-24.2-bin COVERALLS=no
   - EVM_EMACS=emacs-24.3-bin COVERALLS=no
-  - EVM_EMACS=emacs-24.3-bin COVERALLS=yes
   - EVM_EMACS=emacs-24.4-bin COVERALLS=no
-  - EVM_EMACS=emacs-24.4-bin COVERALLS=yes
   - EVM_EMACS=emacs-24.5-bin COVERALLS=no
   - EVM_EMACS=emacs-24.5-bin COVERALLS=yes

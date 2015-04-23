@@ -7,7 +7,7 @@ before_install:
   - export PATH="$HOME/.evm/bin:$PATH"
 
   # install emacs 24
-  - evm install emacs-24.4-bin --use --skip
+  - evm install emacs-24.5-bin --use --skip
 
   # install cask
   - curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
@@ -28,3 +28,5 @@ env:
   - EVM_EMACS=emacs-24.3-bin COVERALLS=yes
   - EVM_EMACS=emacs-24.4-bin COVERALLS=no
   - EVM_EMACS=emacs-24.4-bin COVERALLS=yes
+  - EVM_EMACS=emacs-24.5-bin COVERALLS=no
+  - EVM_EMACS=emacs-24.5-bin COVERALLS=yes

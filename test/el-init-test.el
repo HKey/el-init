@@ -138,39 +138,42 @@
 
 (ert-deftest el-init-test-require/record-error ()
   (el-init-test-sandbox
-   (el-init-load (el-init-test-get-path "test-inits/wrappers/error")
-                 :subdirectories '(".")
-                 :wrappers (list #'el-init-require/record-error))
+    (el-init-test-dont-debug
+      (el-init-load (el-init-test-get-path "test-inits/wrappers/error")
+                    :subdirectories '(".")
+                    :wrappers (list #'el-init-require/record-error)))
 
-   (should (equal (el-init-get-record 'init-test-error
-                                      'el-init-require/record-error)
-                  '(error "Error")))))
+    (should (equal (el-init-get-record 'init-test-error
+                                       'el-init-require/record-error)
+                   '(error "Error")))))
 
 (ert-deftest el-init-test-require/ignore-errors ()
   (el-init-test-sandbox
-   (let ((caught nil))
-     (condition-case e
-         (el-init-load (el-init-test-get-path "test-inits/wrappers/error")
-                       :subdirectories '(".")
-                       :wrappers (list #'el-init-require/ignore-errors))
-       (error (setq caught e)))
+    (let ((caught nil))
+      (condition-case e
+          (el-init-test-dont-debug
+            (el-init-load (el-init-test-get-path "test-inits/wrappers/error")
+                          :subdirectories '(".")
+                          :wrappers (list #'el-init-require/ignore-errors)))
+        (error (setq caught e)))
 
-     (should (null caught)))))
+      (should (null caught)))))
 
 (ert-deftest el-init-test-require/record-eval-after-load-error ()
   (el-init-test-sandbox
-   (el-init-load (el-init-test-get-path "test-inits/wrappers/eval-after-load")
-                 :subdirectories '("error")
-                 :wrappers (list #'el-init-require/record-eval-after-load-error))
-   (add-to-list 'load-path
-                (el-init-test-get-path "test-inits/wrappers/eval-after-load"))
-   (require 'init-test-library)
+    (el-init-test-dont-debug
+      (el-init-load (el-init-test-get-path "test-inits/wrappers/eval-after-load")
+                    :subdirectories '("error")
+                    :wrappers (list #'el-init-require/record-eval-after-load-error))
+      (add-to-list 'load-path
+                   (el-init-test-get-path "test-inits/wrappers/eval-after-load"))
+      (require 'init-test-library))
 
-   (let ((record (el-init-get-record 'init-test-error
-                                     'el-init-require/record-eval-after-load-error)))
-     (should (= (length record) 1))
-     (should (equal (plist-get (cl-first record) :error)
-                    '(error "Error"))))))
+    (let ((record (el-init-get-record 'init-test-error
+                                      'el-init-require/record-eval-after-load-error)))
+      (should (= (length record) 1))
+      (should (equal (plist-get (cl-first record) :error)
+                     '(error "Error"))))))
 
 (ert-deftest el-init-test-require/system-case ()
   (el-init-test-sandbox

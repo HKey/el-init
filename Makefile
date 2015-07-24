@@ -2,7 +2,7 @@ EMACS ?= emacs
 CASK  ?= cask
 MAKE  ?= make
 
-.PHONY: clean compile test full-test coverage
+.PHONY: clean compile test compiled-test full-test coverage
 
 clean:
 	${CASK} clean-elc
@@ -18,13 +18,16 @@ compile:
 	${CASK} exec ${EMACS} -Q -batch -L . -L ./test -f batch-byte-compile  ./test/*.el
 
 test:
-	${CASK} exec ert-runner
+	${CASK} exec ert-runner test/el-init-test.el
+
+compiled-test:
+	${CASK} exec ert-runner test/el-init-test.elc
 
 full-test:
 	${MAKE} clean
 	${MAKE} test
 	${MAKE} compile
-	${MAKE} test
+	${MAKE} compiled-test
 
 # do not compile when using undercover.el
 coverage:

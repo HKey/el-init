@@ -4,5 +4,5 @@
 (package-file "el-init.el")
 
 (development
- (depends-on "ert-runner")
+ (depends-on "ert-runner" "0.7.0")
  (depends-on "undercover"))

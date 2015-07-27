@@ -190,7 +190,7 @@ The record value is an error value and recorded to `el-init-record'.
 Example:
   (el-init-get-record 'init-foo 'el-init-require/record-error)
   ;; => (error \"Required feature `init-foo' was not provided\")"
-  (condition-case e
+  (condition-case-unless-debug e
       (el-init-next feature filename noerror)
     (error (el-init-add-record feature 'el-init-require/record-error e)
            (el-init-alert (error-message-string e)))))
@@ -200,7 +200,9 @@ Example:
 (defun el-init-require/ignore-errors (feature &optional filename noerror)
   "A `require' wrapper function to ignore errors which occur while `el-init-load' is loading.
 This wrapper records no values."
-  (ignore-errors (el-init-next feature filename noerror)))
+  (condition-case-unless-debug nil
+      (el-init-next feature filename noerror)
+    (error nil)))
 
 
 ;; eval-after-load
@@ -220,7 +222,7 @@ Example:
          (fn (lambda (file form)
                (funcall original
                         file
-                        `(condition-case ,e
+                        `(condition-case-unless-debug ,e
                              ,(if (functionp form) `(funcall ,form) form)
                            (error
                             (push (list :file ,file :error ,e)
@@ -359,9 +361,10 @@ This wrapper records no values."
 
 (defun el-init--byte-compile-library (library)
   (awhen (locate-library (el-init--ensure-string library))
-    (ignore-errors
-      (byte-compile-file
-       (el-init--file-name-el it)))))
+    (condition-case-unless-debug nil
+        (byte-compile-file
+         (el-init--file-name-el it))
+      (error nil))))
 
 (defun el-init-require/record-old-library (feature &optional filename noerror)
   "A `require' wrapper function to record whether a configuration file has an old .elc file.

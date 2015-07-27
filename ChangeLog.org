@@ -1,5 +1,16 @@
 * el-init ChangeLog
 
+** dev
+
+[[https://github.com/HKey/el-init/compare/0.1.5...master][commits]]
+
+- Following =require= wrappers now respect =debug-on-error= ([[https://github.com/HKey/el-init/pull/12][#12]]). \\
+  This is useful when using =emacs --debug-init=.
+  - =el-init-require/record-error=
+  - =el-init-require/ignore-errors=
+  - =el-init-require/record-eval-after-load-error=
+  - =el-init-require/compile-old-library=
+
 ** 0.1.5
 
 [[https://github.com/HKey/el-init/compare/0.1.4...0.1.5][commits]]

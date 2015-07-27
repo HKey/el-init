@@ -29,9 +29,12 @@
 This macro is used to run tests containing `condition-case-unless-debug'.
 Because when running tests with ert, it binds `debug-on-error' to t.
 When `debug-on-error' is t, `condition-case-unless-debug' doesn't behave
-as `condition-case'."
+as `condition-case'.
+This macro also operates for edebug.
+Edebug is used by undercover.el."
   (declare (indent 0))
-  `(let ((debug-on-error nil))
+  `(let ((debug-on-error nil)
+         (edebug-on-error nil))
      ,@body))
 
 (provide 'el-init-test-helper)

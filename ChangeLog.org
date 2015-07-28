@@ -1,8 +1,8 @@
 * el-init ChangeLog
 
-** dev
+** 0.2.0
 
-[[https://github.com/HKey/el-init/compare/0.1.5...master][commits]]
+[[https://github.com/HKey/el-init/compare/0.1.5...0.2.0][commits]]
 
 - Following =require= wrappers now respect =debug-on-error= ([[https://github.com/HKey/el-init/pull/12][#12]]). \\
   This is useful when using =emacs --debug-init=.

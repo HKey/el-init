@@ -1,4 +1,5 @@
 language: emacs-lisp
+sudo: false
 before_install:
   # install evm
   - curl -fsSL https://raw.githubusercontent.com/rejeep/evm/master/go | bash

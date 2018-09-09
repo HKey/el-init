@@ -27,4 +27,8 @@ env:
   - EVM_EMACS=emacs-24.3-travis COVERALLS=no
   - EVM_EMACS=emacs-24.4-travis COVERALLS=no
   - EVM_EMACS=emacs-24.5-travis COVERALLS=no
-  - EVM_EMACS=emacs-24.5-travis COVERALLS=yes
+  - EVM_EMACS=emacs-25.1-travis COVERALLS=no
+  - EVM_EMACS=emacs-25.2-travis COVERALLS=no
+  - EVM_EMACS=emacs-25.3-travis COVERALLS=no
+  - EVM_EMACS=emacs-26.1-travis COVERALLS=no
+  - EVM_EMACS=emacs-26.1-travis COVERALLS=yes

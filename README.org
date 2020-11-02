@@ -1,6 +1,6 @@
 * el-init
 
-[[https://travis-ci.org/HKey/el-init][https://travis-ci.org/HKey/el-init.svg?branch=master]]
+[[file:https://github.com/HKey/el-init/workflows/test/badge.svg]]
 [[https://coveralls.io/r/HKey/el-init?branch=master][https://coveralls.io/repos/HKey/el-init/badge.svg?branch=master]]
 [[https://melpa.org/#/el-init][file:https://melpa.org/packages/el-init-badge.svg]]
 [[https://stable.melpa.org/#/el-init][file:https://stable.melpa.org/packages/el-init-badge.svg]]
